@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.layoric.servicestackidea.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.layoric.servicestackidea.MyBundle
 
 class MyApplicationService {
 
