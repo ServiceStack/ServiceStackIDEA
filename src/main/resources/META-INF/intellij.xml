@@ -1,0 +1,10 @@
+<idea-plugin>
+    <actions>
+        <action id="AddServiceStackReference" class="net.servicestack.idea.AddServiceStackAction" text="ServiceStack Reference..." icon="/logo-16.png"
+                description="Adds a ServiceStack reference to the selected module">
+            <!--suppress PluginXmlValidity -->
+            <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewAction"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt R"/>
+        </action>
+    </actions>
+</idea-plugin>
