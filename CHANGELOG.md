@@ -5,4 +5,7 @@
 ## [Unreleased]
 ## [1.1.0]
 ### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+- Fix WebStorm Add ServiceStack Reference
+- Fix Java/Kotlin Add ServiceStack Reference for Intellij + Android Studio
+- Upgrade CI process
+- Restrict support to 192+
