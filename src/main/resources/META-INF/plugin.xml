@@ -3,6 +3,7 @@
     <name>ServiceStack</name>
     <vendor email="team@servicestack.net" url="https://servicestack.net/">ServiceStack</vendor>
 
+
     <!-- Product and plugin compatibility requirements -->
     <!-- https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
