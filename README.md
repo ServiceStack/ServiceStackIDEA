@@ -1,6 +1,6 @@
 # ServiceStackIDEA
 
-![Build](https://github.com/Layoric/ServiceStackIDEA/workflows/Build/badge.svg)
+![Build](https://github.com/ServiceStack/ServiceStackIDEA/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
 
@@ -26,7 +26,7 @@ Integration with ServiceStack Web Services, includes support for Java, Kotlin an
   
 - Manually:
 
-  Download the [latest release](https://github.com/Layoric/ServiceStackIDEA/releases/latest) and install it manually using
+  Download the [latest release](https://github.com/ServiceStack/ServiceStackIDEA/releases/latest) and install it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
 
