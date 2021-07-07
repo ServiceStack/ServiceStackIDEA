@@ -3,6 +3,7 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+## [1.1.1-beta]
 ## [1.1.0]
 ### Added
 - Fix WebStorm Add ServiceStack Reference
