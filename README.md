@@ -75,3 +75,10 @@ This breaking change came from 2019.2+ separation of Java lang features in the `
 Plugin based on the [IntelliJ Platform Plugin Template][template].
 
 [template]: https://github.com/JetBrains/intellij-platform-plugin-template
+
+## Release process
+When adding changes, be sure to update the `CHANGELOG.md` file, filling content in under the `## [Unreleased]` section.
+
+This will get added to the change notes for the plugin release. Also note that version changes will create `Draft` Release entries in this repository. Once the change log is updated and everything is release, publish the draft release to push the updated plugin to Jetbrains Plugin Marketplace.
+
+To update changes in another channel, other than `stable`, use the SEMVER suffix of `-{channel_name}` at the end of the version in `gradle.properties`. For example, `pluginVersion = 1.1.2-beta` to release to the Plugins `beta` channel.
