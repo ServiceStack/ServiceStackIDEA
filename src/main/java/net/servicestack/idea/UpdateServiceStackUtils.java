@@ -25,11 +25,12 @@ public class UpdateServiceStackUtils {
     public static void updateServiceStackReference(PsiFile psiFile) {
         String code = psiFile.getText();
         Scanner scanner = new Scanner(code);
-        List<String> linesOfCode = new ArrayList<String>();
+        List<String> linesOfCode = new ArrayList<>();
+        INativeTypesHandler nativeTypesHandler = IDEAUtils.getNativeTypesHandler(psiFile.getName());
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             linesOfCode.add(line);
-            if (line.startsWith("*/")) break;
+            if (line.startsWith(nativeTypesHandler.getOptionsCommentEnd())) break;
         }
         scanner.close();
 
@@ -44,7 +45,7 @@ public class UpdateServiceStackUtils {
         }
         if (baseUrl == null) {
             //noinspection UnresolvedPluginConfigReference
-            Notification notification = new Notification("ServiceStackIDEA", "Error Updating Reference", "BaseUrl property not found.", NotificationType.ERROR);
+            Notification notification = new Notification("ServiceStackIDEA", "Error updating reference", "BaseUrl property not found.", NotificationType.ERROR);
             Notifications.Bus.notify(notification);
             return;
         }
@@ -58,12 +59,10 @@ public class UpdateServiceStackUtils {
         } catch (URISyntaxException e) {
             //Log error to IDEA warning bubble/window.
             //noinspection UnresolvedPluginConfigReference
-            Notification notification = new Notification("ServiceStackIDEA", "Error Updating Reference", "Invalid BaseUrl provided", NotificationType.ERROR);
+            Notification notification = new Notification("ServiceStackIDEA", "Error updating reference", "Invalid BaseUrl provided", NotificationType.ERROR);
             Notifications.Bus.notify(notification);
             return;
         }
-
-        INativeTypesHandler nativeTypesHandler = IDEAUtils.getNativeTypesHandler(psiFile.getName());
 
         String existingPath = builder.getPath();
         if (existingPath == null || existingPath.equals("/")) {
@@ -72,7 +71,7 @@ public class UpdateServiceStackUtils {
             builder.setPath(combinePath(existingPath, nativeTypesHandler.getRelativeTypesUrl()));
         }
 
-        Map<String,String> options = new HashMap<String,String>();
+        Map<String,String> options = new HashMap<>();
         for (int i = startParamsIndex; i < linesOfCode.size(); i++) {
             String configLine = linesOfCode.get(i);
             if (!configLine.startsWith("//") && configLine.contains(":")) {
@@ -82,21 +81,21 @@ public class UpdateServiceStackUtils {
         }
 
         try {
-            String serverUrl = builder.build().toString();
+            StringBuilder serverUrl = new StringBuilder(builder.build().toString());
             int count = 0;
             // Using URIBuilder with 'addParameter' URL encodes query values..
             // Append manually below to avoid issues https://github.com/ServiceStack/ServiceStack.Java/issues/6
             for (Map.Entry<String,String> option : options.entrySet()) {
                 if(count == 0) {
-                    serverUrl += "?";
+                    serverUrl.append("?");
                 } else {
-                    serverUrl += "&";
+                    serverUrl.append("&");
                 }
                 //remove spaces
-                serverUrl += option.getKey() + "=" + option.getValue().trim().replaceAll("\\u0020","");
+                serverUrl.append(option.getKey()).append("=").append(option.getValue().trim().replaceAll("\\u0020", ""));
                 count++;
             }
-            URL javaCodeUrl = new URL(serverUrl);
+            URL javaCodeUrl = new URL(serverUrl.toString());
 
             URLConnection javaCodeConnection = javaCodeUrl.openConnection();
             javaCodeConnection.setRequestProperty("content-type", "application/json; charset=utf-8");
@@ -115,7 +114,7 @@ public class UpdateServiceStackUtils {
             String javaCode = javaCodeResponse.toString();
             if (!javaCode.startsWith("/* Options:")) {
                 //noinspection UnresolvedPluginConfigReference
-                Notification notification = new Notification("ServiceStackIDEA", "Error Updating Reference", "Invalid response from provided BaseUrl - " + baseUrl, NotificationType.ERROR);
+                Notification notification = new Notification("ServiceStackIDEA", "Error updating reference", "Invalid response from provided BaseUrl - " + baseUrl, NotificationType.ERROR);
                 Notifications.Bus.notify(notification);
                 return;
             }
@@ -126,12 +125,12 @@ public class UpdateServiceStackUtils {
             } else {
                 //Show error
                 //noinspection UnresolvedPluginConfigReference
-                Notification notification = new Notification("ServiceStackIDEA", "Error Updating Reference", "DTO file not found.", NotificationType.ERROR);
+                Notification notification = new Notification("ServiceStackIDEA", "Error updating reference", "DTO file not found.", NotificationType.ERROR);
                 Notifications.Bus.notify(notification);
             }
         } catch (Exception e) {
             //noinspection UnresolvedPluginConfigReference
-            Notification notification = new Notification("ServiceStackIDEA", "Error Updating Reference", e.getMessage(), NotificationType.ERROR);
+            Notification notification = new Notification("ServiceStackIDEA", "Error updating reference", e.getMessage(), NotificationType.ERROR);
             Notifications.Bus.notify(notification);
             e.printStackTrace();
         }
@@ -155,7 +154,7 @@ public class UpdateServiceStackUtils {
             return false;
         }
         //Only pull in the first 1000 chars max to look for header.
-        int range = dtoDocument.getTextLength() > 1000 ? 1000 : dtoDocument.getTextLength();
+        int range = Math.min(dtoDocument.getTextLength(), 1000);
         String code = dtoDocument.getText(new TextRange(0, range));
 
         String[] codeLines = code.split("\n");

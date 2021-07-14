@@ -1,31 +1,28 @@
 package net.servicestack.idea;
 
-/**
- * Created by Layoric on 13/05/2016.
- */
-public class TypeScriptConcreteNativeTypesHandler extends BaseNativeTypesHandler {
+public class PythonNativeTypesHandler extends BaseNativeTypesHandler {
     @Override
     public String getFileExtension() {
-        return ".dtos.ts";
+        return ".py";
     }
 
     @Override
     public String getRelativeTypesUrl() {
-        return "types/typescript";
+        return "types/python";
     }
 
     @Override
     public NativeTypesLanguage getTypesLanguage() {
-        return NativeTypesLanguage.TypeScriptConcrete;
+        return NativeTypesLanguage.Python;
     }
 
     @Override
     public String getOptionsCommentStart() {
-        return "*/";
+        return "\"\"\"";
     }
 
     @Override
     public String getOptionsCommentEnd() {
-        return "*/";
+        return "\"\"\"";
     }
 }

@@ -5,35 +5,38 @@ import com.intellij.ui.JBColor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
+import java.util.Locale;
 
-public class AddTypeScriptRef extends JDialog {
+public class AddPythonRef extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField addressUrlTextField;
     private JTextField nameTextField;
-    private JTextPane errorTextPane;
     private JTextPane infoTextPane;
-    private JCheckBox onlyTypeScriptDefinitionsCheckBox;
+    private JTextPane errorTextPane;
 
     private String selectedDirectory;
     private String errorMessage;
 
     private Module module;
 
-    public AddTypeScriptRef(Module module) {
+    public AddPythonRef(Module module) {
         this.module = module;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-        ImageIcon imageIcon = createImageIcon("/logo-16.png", "ServiceStack");
+        ImageIcon imageIcon = createImageIcon();
         if (imageIcon != null) {
             this.setIconImage(imageIcon.getImage());
         }
@@ -148,12 +151,11 @@ public class AddTypeScriptRef extends JDialog {
 
     private void onOK() {
         StringBuilder errorMessageBuilder = new StringBuilder();
-        AddTypeScriptRefHandler.handleOk(
+        AddPythonRefHandler.handleOk(
                 this.module,
                 this.addressUrlTextField.getText(),
                 this.nameTextField.getText(),
                 this.selectedDirectory,
-                this.onlyTypeScriptDefinitionsCheckBox.isSelected(),
                 errorMessageBuilder
         );
         if (errorMessageBuilder.toString().length() > 0) {
@@ -165,27 +167,26 @@ public class AddTypeScriptRef extends JDialog {
     }
 
     private void onCancel() {
-// add your code here if necessary
+        // add your code here if necessary
         dispose();
     }
 
     public static void main(String[] args) {
-        AddTypeScriptRef dialog = new AddTypeScriptRef(null);
+        AddPythonRef dialog = new AddPythonRef(null);
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
     }
 
-    private ImageIcon createImageIcon(String path, String description) {
-        URL imgURL = getClass().getResource(path);
+    private ImageIcon createImageIcon() {
+        URL imgURL = getClass().getResource("/logo-16.png");
         if (imgURL != null) {
-            return new ImageIcon(imgURL, description);
+            return new ImageIcon(imgURL, "ServiceStack");
         } else {
-            System.err.println("Couldn't find file: " + path);
+            System.err.println("Couldn't find file: " + "/logo-16.png");
             return null;
         }
     }
-
 
     public String getSelectedDirectory() {
         return selectedDirectory;
@@ -202,5 +203,6 @@ public class AddTypeScriptRef extends JDialog {
     public void setInitialDtoName(String initialDtoName) {
         this.nameTextField.setText(initialDtoName);
     }
+
 
 }

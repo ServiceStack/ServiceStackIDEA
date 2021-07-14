@@ -18,4 +18,14 @@ public class KotlinNativeTypesHandler extends BaseNativeTypesHandler {
     public NativeTypesLanguage getTypesLanguage() {
         return NativeTypesLanguage.Kotlin;
     }
+
+    @Override
+    public String getOptionsCommentStart() {
+        return "*/";
+    }
+
+    @Override
+    public String getOptionsCommentEnd() {
+        return "*/";
+    }
 }

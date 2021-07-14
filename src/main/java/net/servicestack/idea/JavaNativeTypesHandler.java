@@ -18,4 +18,14 @@ public class JavaNativeTypesHandler extends BaseNativeTypesHandler {
     public NativeTypesLanguage getTypesLanguage() {
         return NativeTypesLanguage.Java;
     }
+
+    @Override
+    public String getOptionsCommentStart() {
+        return "*/";
+    }
+
+    @Override
+    public String getOptionsCommentEnd() {
+        return "*/";
+    }
 }

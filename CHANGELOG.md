@@ -3,6 +3,7 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Add support for Python Add ServiceStack Reference in PyCharm
 ## [1.1.2]
 - Fix WebStorm Add ServiceStack Reference
 - Fix Java/Kotlin Add ServiceStack Reference for Intellij + Android Studio
