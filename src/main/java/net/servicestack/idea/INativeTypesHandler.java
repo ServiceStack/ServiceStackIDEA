@@ -20,4 +20,5 @@ public interface INativeTypesHandler {
     String getLanguageUrlName();
     String getOptionsCommentStart();
     String getOptionsCommentEnd();
+    String getOptionsIgnoreFlag();
 }

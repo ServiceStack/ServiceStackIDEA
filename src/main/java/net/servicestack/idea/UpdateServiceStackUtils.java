@@ -74,7 +74,7 @@ public class UpdateServiceStackUtils {
         Map<String,String> options = new HashMap<>();
         for (int i = startParamsIndex; i < linesOfCode.size(); i++) {
             String configLine = linesOfCode.get(i);
-            if (!configLine.startsWith("//") && configLine.contains(":")) {
+            if (!configLine.startsWith(nativeTypesHandler.getOptionsIgnoreFlag()) && configLine.contains(":")) {
                 String[] keyVal = configLine.split(":");
                 options.put(keyVal[0], keyVal[1].trim());
             }

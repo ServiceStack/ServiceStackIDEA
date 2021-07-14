@@ -25,4 +25,9 @@ public class PythonNativeTypesHandler extends BaseNativeTypesHandler {
     public String getOptionsCommentEnd() {
         return "\"\"\"";
     }
+
+    @Override
+    public String getOptionsIgnoreFlag() {
+        return "#";
+    }
 }

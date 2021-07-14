@@ -28,4 +28,9 @@ public class KotlinNativeTypesHandler extends BaseNativeTypesHandler {
     public String getOptionsCommentEnd() {
         return "*/";
     }
+
+    @Override
+    public String getOptionsIgnoreFlag() {
+        return "//";
+    }
 }

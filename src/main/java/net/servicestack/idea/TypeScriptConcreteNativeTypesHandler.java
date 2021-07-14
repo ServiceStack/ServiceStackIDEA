@@ -28,4 +28,9 @@ public class TypeScriptConcreteNativeTypesHandler extends BaseNativeTypesHandler
     public String getOptionsCommentEnd() {
         return "*/";
     }
+
+    @Override
+    public String getOptionsIgnoreFlag() {
+        return "//";
+    }
 }
