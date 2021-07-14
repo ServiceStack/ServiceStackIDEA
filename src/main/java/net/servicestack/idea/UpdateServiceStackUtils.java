@@ -30,7 +30,9 @@ public class UpdateServiceStackUtils {
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             linesOfCode.add(line);
-            if (line.startsWith(nativeTypesHandler.getOptionsCommentEnd())) break;
+            if (line.startsWith(nativeTypesHandler.getOptionsCommentEnd()) &&
+            !line.endsWith(nativeTypesHandler.getOptionsCommentStart()))
+                break;
         }
         scanner.close();
 
@@ -112,7 +114,7 @@ public class UpdateServiceStackUtils {
             }
 
             String javaCode = javaCodeResponse.toString();
-            if (!javaCode.startsWith("/* Options:")) {
+            if (!javaCode.startsWith(nativeTypesHandler.getOptionsCommentStart())) {
                 //noinspection UnresolvedPluginConfigReference
                 Notification notification = new Notification("ServiceStackIDEA", "Error updating reference", "Invalid response from provided BaseUrl - " + baseUrl, NotificationType.ERROR);
                 Notifications.Bus.notify(notification);
