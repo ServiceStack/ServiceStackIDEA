@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.PlatformUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -17,7 +18,7 @@ import java.io.File;
  */
 public class AddTypeScriptAction extends AnAction {
     @Override
-    public void actionPerformed(AnActionEvent anActionEvent) {
+    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
         Module module = getModule(anActionEvent);
         AddTypeScriptRef dialog = new AddTypeScriptRef(module);
         dialog.pack();
@@ -42,9 +43,9 @@ public class AddTypeScriptAction extends AnAction {
 
     private String getInitialFileName(String path, INativeTypesHandler defaultTsNativeTypesHandler) {
         String initName = "ServiceReference";
-        Integer count = 1;
+        int count = 1;
         while(true) {
-            File existingFile = new File(path + "/" + initName + count.toString() +
+            File existingFile = new File(path + "/" + initName + count +
                     defaultTsNativeTypesHandler.getFileExtension());
             if(existingFile.exists()) {
                 count++;
@@ -52,19 +53,18 @@ public class AddTypeScriptAction extends AnAction {
                 break;
             }
         }
-        return initName + count.toString();
+        return initName + count;
     }
 
     @Override
-    public void update(AnActionEvent e) {
+    public void update(@NotNull AnActionEvent e) {
         Module module = getModule(e);
         if (module == null) {
             e.getPresentation().setEnabled(false);
         }
 
-        if (!(PlatformUtils.isWebStorm() || PlatformUtils.isPhpStorm() ||
-                PlatformUtils.isRubyMine() || PlatformUtils.isIntelliJ() ||
-                PlatformUtils.isPyCharm())) {
+        if (PlatformUtils.isDataGrip() || PlatformUtils.isAppCode() ||
+            PlatformUtils.isCidr() || PlatformUtils.isCLion()) {
             e.getPresentation().setVisible(false);
         }
 
