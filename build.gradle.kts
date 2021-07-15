@@ -77,6 +77,10 @@ tasks {
         jvmTarget = "1.8"
     }
 
+//    runIde {
+//        ideDir.set(File("C:\\Users\\Layoric\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PyCharm-C\\ch-0\\203.7148.72"))
+//    }
+
     patchPluginXml {
         version.set(properties("pluginVersion"))
         sinceBuild.set(properties("pluginSinceBuild"))

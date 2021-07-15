@@ -1,13 +1,26 @@
 package net.servicestack.idea;
 
+import com.intellij.execution.ExecutionException;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.DocumentRunnable;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.psi.PsiDocumentManager;
+import com.jetbrains.python.packaging.PyPackage;
+import com.jetbrains.python.packaging.PyPackageManager;
+import com.jetbrains.python.packaging.requirement.PyRequirementRelation;
+
+import static com.jetbrains.python.packaging.PyRequirementsKt.pyRequirement;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static net.servicestack.idea.IDEAUtils.refreshFile;
@@ -30,6 +43,8 @@ public class AddPythonRefHandler {
             return;
         }
 
+        tryUpdateRequirementsTxt(module,dtoPath,errorMessage);
+
         if (!IDEAUtils.writeDtoFile(codeLines, dtoPath, errorMessage)) {
             return;
         }
@@ -37,6 +52,33 @@ public class AddPythonRefHandler {
         Analytics.SubmitAnonymousAddReferenceUsage(nativeTypesHandler);
         refreshFile(module,dtoPath, true);
         VirtualFileManager.getInstance().syncRefresh();
+    }
+
+    private static void tryUpdateRequirementsTxt(Module module, String dtoPath, StringBuilder errorMessage) {
+        ProjectRootManager projectRootManager = ProjectRootManager.getInstance(module.getProject());
+        Sdk sdk = projectRootManager.getProjectSdk();
+        if(sdk == null)
+            return;
+        PyPackageManager pyPackageManager = PyPackageManager.getInstance(sdk);
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            try {
+            pyPackageManager.refreshAndGetPackages(false);
+            pyPackageManager.install(Collections.singletonList(
+                    pyRequirement("servicestack", PyRequirementRelation.GTE, "0.0.5")),
+                    Collections.emptyList());
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private static PyPackage findPackage(String name, List<PyPackage> packages) {
+        for (PyPackage pkg : packages) {
+            if (name.equals(pkg.getName())) {
+                return pkg;
+            }
+        }
+        return null;
     }
 
     private static List<String> getDtoLines(String addressUrl, INativeTypesHandler nativeTypesHandler,

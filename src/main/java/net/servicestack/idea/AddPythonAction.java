@@ -40,9 +40,13 @@ public class AddPythonAction extends AnAction {
 
     private String getInitialFileName(String path, INativeTypesHandler defaultTsNativeTypesHandler) {
         String initName = "dtos";
+        File existingFile = new File(path + "/" + initName +
+                defaultTsNativeTypesHandler.getFileExtension());
+        if(!existingFile.exists())
+            return initName;
         int count = 1;
         while(true) {
-            File existingFile = new File(path + "/" + initName + count +
+            existingFile = new File(path + "/" + initName + count +
                     defaultTsNativeTypesHandler.getFileExtension());
             if(existingFile.exists()) {
                 count++;
