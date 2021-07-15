@@ -8,5 +8,6 @@ public enum NativeTypesLanguage {
     Kotlin,
     Dart,
     TypeScriptConcrete,
-    TypeScript
+    TypeScript,
+    Python
 }

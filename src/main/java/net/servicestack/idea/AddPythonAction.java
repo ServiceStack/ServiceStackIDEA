@@ -13,21 +13,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-/**
- * Created by Layoric on 28/05/2016.
- */
-public class AddTypeScriptAction extends AnAction {
+public class AddPythonAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
         Module module = getModule(anActionEvent);
-        AddTypeScriptRef dialog = new AddTypeScriptRef(module);
+        AddPythonRef dialog = new AddPythonRef(module);
         dialog.pack();
         dialog.setLocationRelativeTo(null);
         dialog.setSize(dialog.getPreferredSize());
         dialog.setResizable(true);
-        dialog.setTitle("Add TypeScript ServiceStack Reference");
+        dialog.setTitle("Add Python ServiceStack Reference");
         PsiElement element = LangDataKeys.PSI_ELEMENT.getData(anActionEvent.getDataContext());
-        INativeTypesHandler defaultTsNativeTypesHandler = new TypeScriptNativeTypesHandler();
+        INativeTypesHandler defaultTsNativeTypesHandler = new PythonNativeTypesHandler();
         if (element instanceof PsiDirectory) {
             PsiDirectory selectedDir = (PsiDirectory)element;
             dialog.setSelectedDirectory(selectedDir.getVirtualFile().getPath());
@@ -37,15 +34,19 @@ public class AddTypeScriptAction extends AnAction {
         showDialog(dialog);
     }
 
-    private void showDialog(AddTypeScriptRef dialog) {
+    private void showDialog(AddPythonRef dialog) {
         dialog.setVisible(true);
     }
 
     private String getInitialFileName(String path, INativeTypesHandler defaultTsNativeTypesHandler) {
-        String initName = "ServiceReference";
+        String initName = "dtos";
+        File existingFile = new File(path + "/" + initName +
+                defaultTsNativeTypesHandler.getFileExtension());
+        if(!existingFile.exists())
+            return initName;
         int count = 1;
         while(true) {
-            File existingFile = new File(path + "/" + initName + count +
+            existingFile = new File(path + "/" + initName + count +
                     defaultTsNativeTypesHandler.getFileExtension());
             if(existingFile.exists()) {
                 count++;
@@ -63,8 +64,7 @@ public class AddTypeScriptAction extends AnAction {
             e.getPresentation().setEnabled(false);
         }
 
-        if (PlatformUtils.isDataGrip() || PlatformUtils.isAppCode() ||
-            PlatformUtils.isCidr() || PlatformUtils.isCLion()) {
+        if (!PlatformUtils.isPyCharm()) {
             e.getPresentation().setVisible(false);
         }
 

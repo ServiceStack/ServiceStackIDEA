@@ -1,36 +1,33 @@
 package net.servicestack.idea;
 
-/**
- * Created by Layoric on 4/12/2015.
- */
-public class JavaNativeTypesHandler extends BaseNativeTypesHandler {
+public class PythonNativeTypesHandler extends BaseNativeTypesHandler {
     @Override
     public String getFileExtension() {
-        return ".java";
+        return ".py";
     }
 
     @Override
     public String getRelativeTypesUrl() {
-        return "types/java";
+        return "types/python";
     }
 
     @Override
     public NativeTypesLanguage getTypesLanguage() {
-        return NativeTypesLanguage.Java;
+        return NativeTypesLanguage.Python;
     }
 
     @Override
     public String getOptionsCommentStart() {
-        return "*/";
+        return "\"\"\" Options:";
     }
 
     @Override
     public String getOptionsCommentEnd() {
-        return "*/";
+        return "\"\"\"";
     }
 
     @Override
     public String getOptionsIgnoreFlag() {
-        return "//";
+        return "#";
     }
 }

@@ -114,6 +114,7 @@ public class IDEAUtils {
         if (fileName.endsWith("dtos.dart")) result = new DartNativeTypesHandler();
         if (fileName.endsWith("dtos.ts")) result = new TypeScriptConcreteNativeTypesHandler();
         if (fileName.endsWith("dtos.d.ts")) result = new TypeScriptNativeTypesHandler();
+        if (fileName.endsWith("dtos.py")) result = new PythonNativeTypesHandler();
         return result;
     }
 }

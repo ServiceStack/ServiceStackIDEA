@@ -18,4 +18,19 @@ public class TypeScriptNativeTypesHandler extends BaseNativeTypesHandler {
     public NativeTypesLanguage getTypesLanguage() {
         return NativeTypesLanguage.TypeScript;
     }
+
+    @Override
+    public String getOptionsCommentStart() {
+        return "*/";
+    }
+
+    @Override
+    public String getOptionsCommentEnd() {
+        return "*/";
+    }
+
+    @Override
+    public String getOptionsIgnoreFlag() {
+        return "//";
+    }
 }

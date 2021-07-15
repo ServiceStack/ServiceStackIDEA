@@ -12,6 +12,8 @@
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="intellij.xml">com.intellij.modules.java</depends>
 
+    <depends optional="true" config-file="pycharm.xml">com.intellij.modules.python</depends>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <intentionAction>
@@ -25,8 +27,6 @@
                                  displayName="ServiceStack"
                                  id="ServiceStackIDEAConfig"
                                  instance="net.servicestack.idea.PluginSettingsConfigurable" />
-
-        <notification.group groupId="ServiceStackIDEA" id="ServiceStackIDEA" />
     </extensions>
 
     <actions>

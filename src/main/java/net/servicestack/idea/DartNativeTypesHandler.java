@@ -15,4 +15,19 @@ public class DartNativeTypesHandler extends BaseNativeTypesHandler {
     public NativeTypesLanguage getTypesLanguage() {
         return NativeTypesLanguage.Dart;
     }
+
+    @Override
+    public String getOptionsCommentStart() {
+        return "*/";
+    }
+
+    @Override
+    public String getOptionsCommentEnd() {
+        return "*/";
+    }
+
+    @Override
+    public String getOptionsIgnoreFlag() {
+        return "//";
+    }
 }

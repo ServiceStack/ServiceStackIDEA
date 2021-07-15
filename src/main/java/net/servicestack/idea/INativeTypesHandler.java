@@ -18,4 +18,7 @@ public interface INativeTypesHandler {
     String getRelativeTypesUrl();
     NativeTypesLanguage getTypesLanguage();
     String getLanguageUrlName();
+    String getOptionsCommentStart();
+    String getOptionsCommentEnd();
+    String getOptionsIgnoreFlag();
 }

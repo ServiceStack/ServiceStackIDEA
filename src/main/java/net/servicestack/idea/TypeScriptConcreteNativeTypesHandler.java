@@ -18,4 +18,19 @@ public class TypeScriptConcreteNativeTypesHandler extends BaseNativeTypesHandler
     public NativeTypesLanguage getTypesLanguage() {
         return NativeTypesLanguage.TypeScriptConcrete;
     }
+
+    @Override
+    public String getOptionsCommentStart() {
+        return "*/";
+    }
+
+    @Override
+    public String getOptionsCommentEnd() {
+        return "*/";
+    }
+
+    @Override
+    public String getOptionsIgnoreFlag() {
+        return "//";
+    }
 }
