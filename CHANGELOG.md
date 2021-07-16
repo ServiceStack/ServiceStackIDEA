@@ -3,6 +3,9 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Add support for Python Add ServiceStack Reference in PyCharm.
+- Add support for TypeScript Add ServiceStack Reference in Rider.
+- Workaround plugin issue with 2021.1 IDEs and optional dependencies.
 ## [1.2.0-nightly]
 - Add support for Python Add ServiceStack Reference in PyCharm.
 - Add support for TypeScript Add ServiceStack Reference in Rider.

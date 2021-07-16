@@ -53,11 +53,11 @@ public class IDEAPomFileHelper {
         String pomFilePath = null;
         for(PsiFile psiPom : pomLibFiles) {
             PsiDirectory psiPomParent = psiPom.getParent();
-            VirtualFile moduleVirtualFile = module.getModuleFile();
-            if(psiPomParent == null || moduleVirtualFile == null) {
+            Project project = module.getProject();
+            if(psiPomParent == null) {
                 continue;
             }
-            if(psiPomParent.getVirtualFile().getPath().equals(moduleVirtualFile.getParent().getPath())) {
+            if(psiPomParent.getVirtualFile().getPath().equals(project.getBasePath())) {
                 pomFilePath = psiPom.getVirtualFile().getPath();
             }
         }
@@ -85,6 +85,7 @@ public class IDEAPomFileHelper {
         newDepNode.appendChild(groupNode);
         newDepNode.appendChild(artifactNode);
         newDepNode.appendChild(versionNode);
+        assert dependenciesNode != null;
         dependenciesNode.appendChild(newDepNode);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -97,8 +98,10 @@ public class IDEAPomFileHelper {
 
         final Project project = module.getProject();
         final VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(pomFile);
+        assert virtualFile != null;
         final com.intellij.openapi.editor.Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
         final FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
+        assert document != null;
         fileDocumentManager.saveDocument(document); //when file is edited and editor is closed, it is needed to save the text
         PsiDocumentManager.getInstance(project).commitDocument(document);
         PsiDocumentManager.getInstance(module.getProject()).commitAllDocuments();
@@ -142,6 +145,7 @@ public class IDEAPomFileHelper {
         }
 
         Node dependencies = getMavenDependenciesNode(doc);
+        assert dependencies != null;
         NodeList depElements = dependencies.getChildNodes();
         for (int i = 0; i < depElements.getLength(); i++) {
             Node dependencyElement = depElements.item(i);
