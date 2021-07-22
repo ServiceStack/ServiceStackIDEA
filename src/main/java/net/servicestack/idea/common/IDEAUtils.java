@@ -111,21 +111,21 @@ public class IDEAUtils {
 
     public static String getInitialFileName(String path, INativeTypesHandler defaultTsNativeTypesHandler) {
         String initName = "dtos";
-        File existingFile = new File(path + "/" + initName +
+        File possibleFileName = new File(path + "/" + initName +
                 defaultTsNativeTypesHandler.getFileExtension());
-        if(!existingFile.exists())
-            return initName;
+        if(!possibleFileName.exists())
+            return possibleFileName.getName();
         int count = 1;
         while(true) {
-            existingFile = new File(path + "/" + initName + count +
+            possibleFileName = new File(path + "/" + initName + count +
                     defaultTsNativeTypesHandler.getFileExtension());
-            if(existingFile.exists()) {
+            if(possibleFileName.exists()) {
                 count++;
             } else {
                 break;
             }
         }
-        return initName + count;
+        return possibleFileName.getName();
     }
 
     public static String getDtoNameWithoutExtension(String name) {
@@ -140,8 +140,8 @@ public class IDEAUtils {
         }
     }
 
-    public static ImageIcon createImageIcon(String path, String description, Class ownerClass) {
-        URL imgURL = ownerClass.getResource(path);
+    public static ImageIcon createImageIcon(String path, String description) {
+        URL imgURL = IDEAUtils.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL, description);
         } else {

@@ -1,6 +1,6 @@
 <idea-plugin>
     <actions>
-        <action id="AddServiceStackPythonReference" class="net.servicestack.idea.AddPythonAction" text="ServiceStack Reference..." icon="/logo-16.png"
+        <action id="AddServiceStackPythonReference" class="net.servicestack.idea.AddPythonAction" text="ServiceStack Reference..." icon="/servicestack.svg"
                 description="Adds a ServiceStack reference to the selected package">
             <!--suppress PluginXmlValidity -->
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewAction"/>

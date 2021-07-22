@@ -9,5 +9,8 @@ public enum NativeTypesLanguage {
     Dart,
     TypeScriptConcrete,
     TypeScript,
-    Python
+    Python,
+    CSharp,
+    FSharp,
+    VbNet
 }

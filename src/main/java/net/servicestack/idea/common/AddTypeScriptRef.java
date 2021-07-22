@@ -29,7 +29,7 @@ public class AddTypeScriptRef extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-        ImageIcon imageIcon = createImageIcon("/logo-16.png", "ServiceStack");
+        ImageIcon imageIcon = IDEAUtils.createImageIcon("/servicestack-64.png", "ServiceStack");
         if (imageIcon != null) {
             this.setIconImage(imageIcon.getImage());
         }
@@ -171,17 +171,6 @@ public class AddTypeScriptRef extends JDialog {
         dialog.setVisible(true);
         System.exit(0);
     }
-
-    private ImageIcon createImageIcon(String path, String description) {
-        URL imgURL = getClass().getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL, description);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
-
 
     public String getSelectedDirectory() {
         return selectedDirectory;

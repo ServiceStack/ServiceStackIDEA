@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.psi.PsiPackage;
 import com.intellij.ui.JBColor;
+import net.servicestack.idea.common.IDEAUtils;
 import net.servicestack.idea.common.INativeTypesHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +50,7 @@ public class AddRef extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-        ImageIcon imageIcon = createImageIcon("/logo-16.png", "ServiceStack");
+        ImageIcon imageIcon = IDEAUtils.createImageIcon("/servicestack-64.png", "ServiceStack");
         if (imageIcon != null) {
             this.setIconImage(imageIcon.getImage());
         }
