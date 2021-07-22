@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
+import net.servicestack.idea.common.INativeTypesHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -31,7 +32,7 @@ public class UpdateServiceStackReferenceIntention extends QuickEditAction implem
             if(psiFile == null) {
                 return false;
             }
-            INativeTypesHandler nativeTypesHandler = IDEAUtils.getNativeTypesHandler(psiFile.getName());
+            INativeTypesHandler nativeTypesHandler = NativeTypeUtils.getNativeTypesHandler(psiFile.getName());
             if(nativeTypesHandler == null) {
                 return false;
             }

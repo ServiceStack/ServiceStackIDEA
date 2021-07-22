@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;

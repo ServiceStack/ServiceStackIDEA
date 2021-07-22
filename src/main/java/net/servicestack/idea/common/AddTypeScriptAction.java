@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -31,7 +31,7 @@ public class AddTypeScriptAction extends AnAction {
         if (element instanceof PsiDirectory) {
             PsiDirectory selectedDir = (PsiDirectory)element;
             dialog.setSelectedDirectory(selectedDir.getVirtualFile().getPath());
-            String initialName = getInitialFileName(selectedDir.getVirtualFile().getPath(),defaultTsNativeTypesHandler);
+            String initialName = IDEAUtils.getInitialFileName(selectedDir.getVirtualFile().getPath(),defaultTsNativeTypesHandler);
             dialog.setInitialDtoName(initialName);
         }
         showDialog(dialog);
@@ -39,21 +39,6 @@ public class AddTypeScriptAction extends AnAction {
 
     private void showDialog(AddTypeScriptRef dialog) {
         dialog.setVisible(true);
-    }
-
-    private String getInitialFileName(String path, INativeTypesHandler defaultTsNativeTypesHandler) {
-        String initName = "ServiceReference";
-        int count = 1;
-        while(true) {
-            File existingFile = new File(path + "/" + initName + count +
-                    defaultTsNativeTypesHandler.getFileExtension());
-            if(existingFile.exists()) {
-                count++;
-            } else {
-                break;
-            }
-        }
-        return initName + count;
     }
 
     @Override

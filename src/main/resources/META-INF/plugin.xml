@@ -19,17 +19,17 @@
             <className>net.servicestack.idea.UpdateServiceStackReferenceIntention</className>
         </intentionAction>
 
-        <applicationService serviceImplementation="net.servicestack.idea.PluginSettingsService"
+        <applicationService serviceImplementation="net.servicestack.idea.common.PluginSettingsService"
                             id="ServiceStackIDEASettingsService" />
 
         <applicationConfigurable groupId="ServiceStackIDEA"
                                  displayName="ServiceStack"
                                  id="ServiceStackIDEAConfig"
-                                 instance="net.servicestack.idea.PluginSettingsConfigurable" />
+                                 instance="net.servicestack.idea.common.PluginSettingsConfigurable" />
     </extensions>
 
     <actions>
-        <action id="AddTypeScriptReference" class="net.servicestack.idea.AddTypeScriptAction" text="TypeScript Reference..." icon="/logo-16.png"
+        <action id="AddTypeScriptReference" class="net.servicestack.idea.common.AddTypeScriptAction" text="TypeScript Reference..." icon="/logo-16.png"
                 description="Adds a ServiceStack TypeScript reference to the selected folder">
             <!--suppress PluginXmlValidity -->
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewAction"/>

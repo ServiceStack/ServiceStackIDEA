@@ -12,6 +12,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import net.servicestack.idea.common.INativeTypesHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Layoric on 9/04/2015.
@@ -20,27 +22,22 @@ import com.intellij.psi.PsiFile;
 public class UpdateServiceStackReference extends AnAction {
 
     @Override
-    public void actionPerformed(AnActionEvent anActionEvent) {
+    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
         final PsiFile psiFile = getPsiFile(anActionEvent);
         if(UpdateServiceStackUtils.containsOptionsHeader(psiFile)) {
-            ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                @Override
-                public void run() {
-                    UpdateServiceStackUtils.updateServiceStackReference(psiFile);
-                }
-            });
+            ApplicationManager.getApplication().runWriteAction(() -> UpdateServiceStackUtils.updateServiceStackReference(psiFile));
         }
     }
 
     @Override
-    public void update(AnActionEvent e) {
+    public void update(@NotNull AnActionEvent e) {
         PsiFile psiFile = getPsiFile(e);
         if (psiFile == null) {
             e.getPresentation().setVisible(false);
             return;
         }
 
-        INativeTypesHandler nativeTypesHandler = IDEAUtils.getNativeTypesHandler(psiFile.getName());
+        INativeTypesHandler nativeTypesHandler = NativeTypeUtils.getNativeTypesHandler(psiFile.getName());
 
         if(nativeTypesHandler == null) {
             e.getPresentation().setVisible(false);

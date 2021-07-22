@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -19,7 +19,7 @@ public class DialogErrorMessages {
         Notification notification = new Notification(
                 "ServiceStackIDEA",
                 "Add ServiceStack Reference failed to read response",
-                errorMessage.toString() + "\n" + e.getMessage(),
+                errorMessage + "\n" + e.getMessage(),
                 NotificationType.ERROR);
         Notifications.Bus.notify(notification);
         return errorMessage;

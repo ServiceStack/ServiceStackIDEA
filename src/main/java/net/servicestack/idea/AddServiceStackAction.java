@@ -25,9 +25,9 @@ import java.util.List;
 
 public class AddServiceStackAction extends AnAction {
 
-    public void actionPerformed(AnActionEvent e) {
+    public void actionPerformed(@NotNull AnActionEvent e) {
         Module module = getModule(e);
-        AddRef dialog = new AddRef(module);
+        AddRef dialog = new AddRef(module,e);
         dialog.pack();
         dialog.setLocationRelativeTo(null);
         dialog.setSize(dialog.getPreferredSize());
@@ -58,7 +58,7 @@ public class AddServiceStackAction extends AnAction {
                     PsiDirectory selectedDir = (PsiDirectory) element;
                     String packageName = "";
                     String moduleDirectoryPath = module.getModuleFile().getParent().getPath();
-                    List<String> packageArray = new ArrayList<String>();
+                    List<String> packageArray = new ArrayList<>();
                     while (selectedDir != null && !(moduleDirectoryPath.equals(selectedDir.getVirtualFile().getPath()))) {
                         packageArray.add(selectedDir.getName());
                         selectedDir = selectedDir.getParent();
@@ -76,7 +76,7 @@ public class AddServiceStackAction extends AnAction {
                     //do nothing, can't get package name.
                 }
             }
-            ShowDialog(module, dialog);
+            ShowDialog(module, dialog, e);
             return;
         }
 
@@ -102,14 +102,14 @@ public class AddServiceStackAction extends AnAction {
         //Check for document, display without a package name if no document.
         Document document = FileDocumentManager.getInstance().getDocument(selectedFile);
         if (document == null) {
-            ShowDialog(module, dialog);
+            ShowDialog(module, dialog,e);
             return;
         }
 
         //Check if a 'PsiFile', display without a package name if no PsiFile.
         PsiFile psiFile = PsiDocumentManager.getInstance(module.getProject()).getPsiFile(document);
         if (psiFile == null) {
-            ShowDialog(module, dialog);
+            ShowDialog(module, dialog,e);
             return;
         }
 
@@ -121,11 +121,11 @@ public class AddServiceStackAction extends AnAction {
                 dialog.setSelectedPackage(mainPackage);
             }
         }
-        ShowDialog(module, dialog);
+        ShowDialog(module, dialog,e);
     }
 
-    private void ShowDialog(Module module, AddRef dialog) {
-        if (GradleBuildFileHelper.isGradleModule(module) && GradleBuildFileHelper.isUsingKotlin(module)) {
+    private void ShowDialog(Module module, AddRef dialog, AnActionEvent event) {
+        if (GradleBuildFileHelper.isGradleModule(event) && GradleBuildFileHelper.isUsingKotlin(event)) {
             dialog.setFileName("dtos.kt");
         }
         else if (IDEAPomFileHelper.isMavenProjectWithKotlin(module)) {
@@ -165,7 +165,11 @@ public class AddServiceStackAction extends AnAction {
 
         boolean isMavenModule =  IDEAPomFileHelper.isMavenModule(module);
 
-        if (isAndroidProject(module) || isMavenModule || isDartProject(module)) {
+        if (isAndroidProject(module) ||
+                isMavenModule ||
+                GradleBuildFileHelper.isGradleModule(e) ||
+                isDartProject(module) ||
+                IsKotlinProject(e)) {
             e.getPresentation().setEnabled(true);
         } else {
             e.getPresentation().setEnabled(false);
@@ -197,6 +201,10 @@ public class AddServiceStackAction extends AnAction {
 
     private static boolean isDartProject(@NotNull Module module) {
         return GradleBuildFileHelper.isDartProject(module);
+    }
+
+    private static boolean IsKotlinProject(AnActionEvent event) {
+        return GradleBuildFileHelper.isUsingKotlin(event);
     }
 
     static Module getModule(AnActionEvent e) {

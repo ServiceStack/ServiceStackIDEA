@@ -3,6 +3,7 @@ package net.servicestack.idea;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -11,6 +12,9 @@ import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiPackage;
+import net.servicestack.idea.common.Analytics;
+import net.servicestack.idea.common.DialogErrorMessages;
+import net.servicestack.idea.common.IDEAUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -22,17 +26,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.servicestack.idea.common.IDEAUtils.*;
+
 
 public class AddServiceStackRefHandler {
-
-    private static INativeTypesHandler defaultNativeTypesHandler;
-
     public static void handleOk(String addressUrl, String qualifiedPackageName,
                                 String fileName, String selectedDirectory,
-                                Module module, StringBuilder errorMessage) {
+                                Module module, AnActionEvent event, StringBuilder errorMessage) {
         List<String> javaCodeLines = getDtoLines(addressUrl, qualifiedPackageName, fileName, errorMessage);
         if (javaCodeLines == null) return;
-        defaultNativeTypesHandler = IDEAUtils.getDefaultNativeTypesHandler(module);
+
         boolean showDto = true;
         boolean isMavenModule = IDEAPomFileHelper.isMavenModule(module);
         if(isMavenModule) {
@@ -40,7 +43,7 @@ public class AddServiceStackRefHandler {
         } else {
             //Gradle
             try {
-                showDto = !addGradleDependencyIfRequired(module);
+                showDto = !addGradleDependencyIfRequired(module,event);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 String message = "Failed to update build.gradle with '" +
@@ -66,7 +69,7 @@ public class AddServiceStackRefHandler {
         if (!IDEAUtils.writeDtoFile(javaCodeLines, dtoPath, errorMessage)) {
             return;
         }
-        Analytics.SubmitAnonymousAddReferenceUsage(getNativeTypesHandler(fileName));
+        Analytics.SubmitAnonymousAddReferenceUsage(NativeTypeUtils.getNativeTypesHandler(fileName));
         IDEAUtils.refreshFile(module, dtoPath, showDto);
         VirtualFileManager.getInstance().syncRefresh();
     }
@@ -79,7 +82,7 @@ public class AddServiceStackRefHandler {
             options.put("Package", qualifiedPackageName);
             String name = getDtoNameWithoutExtension(fileName).replaceAll("\\.", "_");
             options.put("GlobalNamespace", name);
-            javaCodeLines = getNativeTypesHandler(fileName).getUpdatedCode(addressUrl, options);
+            javaCodeLines = NativeTypeUtils.getNativeTypesHandler(fileName).getUpdatedCode(addressUrl, options);
 
             if (!javaCodeLines.get(0).startsWith("/* Options:")) {
                 //Invalid endpoint
@@ -97,14 +100,6 @@ public class AddServiceStackRefHandler {
             return null;
         }
         return javaCodeLines;
-    }
-
-    private static INativeTypesHandler getNativeTypesHandler(String fileName) {
-        INativeTypesHandler nativeTypesHandler = IDEAUtils.getNativeTypesHandler(fileName);
-        if(nativeTypesHandler != null) {
-            return nativeTypesHandler;
-        }
-        return defaultNativeTypesHandler;
     }
 
     private static boolean tryAddMavenDependency(Module module) {
@@ -145,9 +140,12 @@ public class AddServiceStackRefHandler {
         return showDto;
     }
 
-    private static boolean addGradleDependencyIfRequired(Module module) throws FileNotFoundException {
-        boolean depAdded = GradleBuildFileHelper.addDependency(module, DepConfig.servicestackGroupId, DepConfig.androidPackageId, DepConfig.servicestackVersion);
-        if (GradleBuildFileHelper.addDependency(module, DepConfig.gsonGroupId, DepConfig.gsonPackageId, DepConfig.gsonVersion))
+    private static boolean addGradleDependencyIfRequired(Module module,AnActionEvent event) throws FileNotFoundException {
+        boolean isAndroid = GradleBuildFileHelper.isAndroidProject(module);
+        boolean depAdded = GradleBuildFileHelper.addDependency(event, DepConfig.servicestackGroupId,
+                isAndroid ? DepConfig.androidPackageId : DepConfig.clientPackageId,
+                DepConfig.servicestackVersion);
+        if (GradleBuildFileHelper.addDependency(event, DepConfig.gsonGroupId, DepConfig.gsonPackageId, DepConfig.gsonVersion))
             depAdded = true;
 
         if (depAdded) {
@@ -158,10 +156,11 @@ public class AddServiceStackRefHandler {
     }
 
     private static String getDtoPath(Module module, String qualifiedPackageName, String selectedDirectory, String fileName, StringBuilder errorMessage) throws FileNotFoundException {
-        VirtualFile moduleFile = module.getModuleFile();
-        if(moduleFile == null) {
+        String projectBasePath = module.getProject().getBasePath();
+        if(projectBasePath == null) {
             throw new FileNotFoundException("Module file not found. Unable to add DTO to project.");
         }
+        File projectBase = new File(projectBasePath);
         String fullDtoPath;
 
         PsiPackage mainPackage = JavaPsiFacade.getInstance(module.getProject()).findPackage(qualifiedPackageName);
@@ -182,37 +181,13 @@ public class AddServiceStackRefHandler {
                     getDtoFileName(fileName);
         } else {
             String moduleSourcePath;
-            if(moduleFile.getParent() == null) {
-                moduleSourcePath = moduleFile.getPath() + "/main/java";
+            if(projectBase.getParent() == null) {
+                moduleSourcePath = projectBase.getPath() + "/main/java";
             } else {
-                moduleSourcePath = moduleFile.getParent().getPath() + "/src/main/java";
+                moduleSourcePath = projectBase.getParent() + "/src/main/java";
             }
             fullDtoPath = moduleSourcePath + File.separator + getDtoFileName(fileName);
         }
         return fullDtoPath;
-    }
-
-    public static String getDtoFileName(String name) {
-        INativeTypesHandler nativeTypesHandler = getNativeTypesHandler(name);
-        int p = name.lastIndexOf(".");
-        if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
-            /* file has no extension */
-            return name + nativeTypesHandler.getFileExtension();
-        } else {
-            /* file has extension e */
-            return name;
-        }
-    }
-
-    public static String getDtoNameWithoutExtension(String name) {
-        INativeTypesHandler nativeTypesHandler = getNativeTypesHandler(name);
-        int p = name.lastIndexOf(".");
-        if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
-            /* file has no extension */
-            return name;
-        } else {
-            /* file has extension e */
-            return name.substring(0, p);
-        }
     }
 }

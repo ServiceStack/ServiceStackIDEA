@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import org.apache.http.client.utils.URIBuilder;
 

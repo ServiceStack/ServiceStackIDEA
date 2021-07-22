@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -10,7 +10,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static net.servicestack.idea.IDEAUtils.refreshFile;
+import static net.servicestack.idea.common.IDEAUtils.getDtoFileName;
+import static net.servicestack.idea.common.IDEAUtils.refreshFile;
 
 public class AddTypeScriptRefHandler {
 
@@ -63,15 +64,5 @@ public class AddTypeScriptRefHandler {
             return null;
         }
         return codeLines;
-    }
-
-    public static String getDtoFileName(String name, INativeTypesHandler nativeTypesHandler) {
-        if (!name.endsWith(nativeTypesHandler.getFileExtension())) {
-            /* file has no extension */
-            return name + nativeTypesHandler.getFileExtension();
-        } else {
-            /* file has extension */
-            return name;
-        }
     }
 }

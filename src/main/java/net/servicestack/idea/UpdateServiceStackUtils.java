@@ -7,6 +7,8 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
+import net.servicestack.idea.common.Analytics;
+import net.servicestack.idea.common.INativeTypesHandler;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.io.BufferedReader;
@@ -26,7 +28,7 @@ public class UpdateServiceStackUtils {
         String code = psiFile.getText();
         Scanner scanner = new Scanner(code);
         List<String> linesOfCode = new ArrayList<>();
-        INativeTypesHandler nativeTypesHandler = IDEAUtils.getNativeTypesHandler(psiFile.getName());
+        INativeTypesHandler nativeTypesHandler = NativeTypeUtils.getNativeTypesHandler(psiFile.getName());
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             linesOfCode.add(line);
@@ -76,6 +78,9 @@ public class UpdateServiceStackUtils {
         Map<String,String> options = new HashMap<>();
         for (int i = startParamsIndex; i < linesOfCode.size(); i++) {
             String configLine = linesOfCode.get(i);
+            if(configLine.startsWith(nativeTypesHandler.getOptionsCommentEnd())) {
+                break;
+            }
             if (!configLine.startsWith(nativeTypesHandler.getOptionsIgnoreFlag()) && configLine.contains(":")) {
                 String[] keyVal = configLine.split(":");
                 options.put(keyVal[0], keyVal[1].trim());

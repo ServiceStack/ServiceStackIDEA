@@ -1,5 +1,8 @@
 package net.servicestack.idea;
 
+import net.servicestack.idea.common.BaseNativeTypesHandler;
+import net.servicestack.idea.common.NativeTypesLanguage;
+
 public class DartNativeTypesHandler extends BaseNativeTypesHandler {
     @Override
     public String getFileExtension() {
@@ -18,7 +21,7 @@ public class DartNativeTypesHandler extends BaseNativeTypesHandler {
 
     @Override
     public String getOptionsCommentStart() {
-        return "*/";
+        return "/* Options:";
     }
 
     @Override

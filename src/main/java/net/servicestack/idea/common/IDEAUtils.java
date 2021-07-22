@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -8,9 +8,11 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.util.PlatformUtils;
+import net.servicestack.idea.NativeTypeUtils;
 
+import javax.swing.*;
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -41,9 +43,7 @@ public class IDEAUtils {
         File file = new File(filePath);
         VirtualFile fileByUrl = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file);
 
-        if (fileByUrl == null) {
-            return;
-        }
+        if (fileByUrl == null) { return; }
 
         FileEditorManager.getInstance(module.getProject()).openFile(fileByUrl, false);
         Editor currentEditor = FileEditorManager.getInstance(module.getProject()).getSelectedTextEditor();
@@ -87,34 +87,66 @@ public class IDEAUtils {
         FileEditorManager.getInstance(module.getProject()).closeFile(fileByUrl);
     }
 
-    public static INativeTypesHandler getDefaultNativeTypesHandler(Module module) {
-        if (GradleBuildFileHelper.isGradleModule(module) && GradleBuildFileHelper.isUsingKotlin(module)) {
-            return new KotlinNativeTypesHandler();
+    public static String getDtoFileName(String name, INativeTypesHandler nativeTypesHandler) {
+        if (!name.endsWith(nativeTypesHandler.getFileExtension())) {
+            /* file has no extension */
+            return name + nativeTypesHandler.getFileExtension();
+        } else {
+            /* file has extension */
+            return name;
         }
-
-        if (IDEAPomFileHelper.isMavenProjectWithKotlin(module)) {
-            return new KotlinNativeTypesHandler();
-        }
-
-        if (GradleBuildFileHelper.isDartProject(module)) {
-            return new DartNativeTypesHandler();
-        }
-
-        if (PlatformUtils.isWebStorm()) {
-            return new TypeScriptConcreteNativeTypesHandler();
-        }
-
-        return new JavaNativeTypesHandler();
     }
 
-    public static INativeTypesHandler getNativeTypesHandler(String fileName) {
-        INativeTypesHandler result = null;
-        if (fileName.endsWith(".kt")) result = new KotlinNativeTypesHandler();
-        if (fileName.endsWith(".java")) result =  new JavaNativeTypesHandler();
-        if (fileName.endsWith("dtos.dart")) result = new DartNativeTypesHandler();
-        if (fileName.endsWith("dtos.ts")) result = new TypeScriptConcreteNativeTypesHandler();
-        if (fileName.endsWith("dtos.d.ts")) result = new TypeScriptNativeTypesHandler();
-        if (fileName.endsWith("dtos.py")) result = new PythonNativeTypesHandler();
-        return result;
+    public static String getDtoFileName(String name) {
+        INativeTypesHandler nativeTypesHandler = NativeTypeUtils.getNativeTypesHandler(name);
+        int p = name.lastIndexOf(".");
+        if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
+            /* file has no extension */
+            return name + nativeTypesHandler.getFileExtension();
+        } else {
+            /* file has extension e */
+            return name;
+        }
+    }
+
+    public static String getInitialFileName(String path, INativeTypesHandler defaultTsNativeTypesHandler) {
+        String initName = "dtos";
+        File existingFile = new File(path + "/" + initName +
+                defaultTsNativeTypesHandler.getFileExtension());
+        if(!existingFile.exists())
+            return initName;
+        int count = 1;
+        while(true) {
+            existingFile = new File(path + "/" + initName + count +
+                    defaultTsNativeTypesHandler.getFileExtension());
+            if(existingFile.exists()) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return initName + count;
+    }
+
+    public static String getDtoNameWithoutExtension(String name) {
+        INativeTypesHandler nativeTypesHandler = NativeTypeUtils.getNativeTypesHandler(name);
+        int p = name.lastIndexOf(".");
+        if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
+            /* file has no extension */
+            return name;
+        } else {
+            /* file has extension e */
+            return name.substring(0, p);
+        }
+    }
+
+    public static ImageIcon createImageIcon(String path, String description, Class ownerClass) {
+        URL imgURL = ownerClass.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL, description);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
     }
 }

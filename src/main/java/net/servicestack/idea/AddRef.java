@@ -6,21 +6,19 @@ import com.intellij.ide.util.PackageChooserDialog;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.psi.PsiPackage;
 import com.intellij.ui.JBColor;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
+import net.servicestack.idea.common.INativeTypesHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -38,14 +36,16 @@ public class AddRef extends JDialog {
     private JTextField nameTextField;
     private JTextPane infoTextPane;
     private Module module;
+    private AnActionEvent sourceEvent;
 
     private String errorMessage;
     private String selectedDirectory;
 
     private INativeTypesHandler defaultNativeTypesHandler;
 
-    public AddRef(@NotNull Module module) {
+    public AddRef(@NotNull Module module, AnActionEvent sourceEvent) {
         this.module = module;
+        this.sourceEvent = sourceEvent;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -265,6 +265,7 @@ public class AddRef extends JDialog {
                 nameTextField.getText(),
                 selectedDirectory,
                 module,
+                sourceEvent,
                 errorMessage);
 
         if (errorMessage.toString().length() > 0) {
