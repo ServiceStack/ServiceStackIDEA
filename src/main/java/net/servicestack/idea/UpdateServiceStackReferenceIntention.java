@@ -58,6 +58,6 @@ public class UpdateServiceStackReferenceIntention extends QuickEditAction implem
 
     @Override
     public Icon getIcon(@IconFlags int i) {
-        return new ImageIcon(this.getClass().getResource("/logo-16.png"));
+        return new ImageIcon(this.getClass().getResource("/servicestack.svg"));
     }
 }

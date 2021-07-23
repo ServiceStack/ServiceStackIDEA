@@ -61,7 +61,7 @@ public class AddPythonRefHandler {
         if(sdk == null)
             return;
         PyPackageManager pyPackageManager = PyPackageManager.getInstance(sdk);
-        ApplicationManager.getApplication().runWriteAction(() -> {
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
             pyPackageManager.refreshAndGetPackages(false);
             pyPackageManager.install(Collections.singletonList(
