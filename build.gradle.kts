@@ -77,9 +77,9 @@ tasks {
         jvmTarget = "1.8"
     }
 
-    runIde {
-        ideDir.set(File("C:\\Users\\Layoric\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PyCharm-P\\ch-1\\203.7717.81"))
-    }
+//    runIde {
+//        ideDir.set(File("C:\\Users\\Layoric\\AppData\\Local\\JetBrains\\Toolbox\\apps\\AndroidStudio\\ch-0\\202.7486908"))
+//    }
 
     patchPluginXml {
         version.set(properties("pluginVersion"))
