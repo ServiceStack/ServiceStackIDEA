@@ -15,6 +15,7 @@ import com.intellij.psi.PsiPackage;
 import net.servicestack.idea.common.Analytics;
 import net.servicestack.idea.common.DialogErrorMessages;
 import net.servicestack.idea.common.IDEAUtils;
+import net.servicestack.idea.common.INativeTypesHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -32,8 +33,14 @@ import static net.servicestack.idea.common.IDEAUtils.*;
 public class AddServiceStackRefHandler {
     public static void handleOk(String addressUrl, String qualifiedPackageName,
                                 String fileName, String selectedDirectory,
-                                Module module, AnActionEvent event, StringBuilder errorMessage) {
-        List<String> javaCodeLines = getDtoLines(addressUrl, qualifiedPackageName, fileName, errorMessage);
+                                Module module, AnActionEvent event,
+                                INativeTypesHandler nativeTypesHandler,
+                                StringBuilder errorMessage) {
+        List<String> javaCodeLines = getDtoLines(addressUrl,
+                qualifiedPackageName,
+                fileName,
+                nativeTypesHandler,
+                errorMessage);
         if (javaCodeLines == null) return;
 
         boolean showDto = true;
@@ -61,7 +68,12 @@ public class AddServiceStackRefHandler {
 
         String dtoPath;
         try {
-            dtoPath = getDtoPath(module,qualifiedPackageName, selectedDirectory, fileName, errorMessage);
+            dtoPath = getDtoPath(module,
+                    qualifiedPackageName,
+                    selectedDirectory,
+                    fileName,
+                    nativeTypesHandler,
+                    errorMessage);
         } catch (Exception e) {
             return;
         }
@@ -69,20 +81,24 @@ public class AddServiceStackRefHandler {
         if (!IDEAUtils.writeDtoFile(javaCodeLines, dtoPath, errorMessage)) {
             return;
         }
-        Analytics.SubmitAnonymousAddReferenceUsage(NativeTypeUtils.getNativeTypesHandler(fileName));
+        Analytics.SubmitAnonymousAddReferenceUsage(nativeTypesHandler);
         IDEAUtils.refreshFile(module, dtoPath, showDto);
         VirtualFileManager.getInstance().syncRefresh();
     }
 
     @Nullable
-    private static List<String> getDtoLines(String addressUrl, String qualifiedPackageName, String fileName, StringBuilder errorMessage) {
+    private static List<String> getDtoLines(String addressUrl,
+                                            String qualifiedPackageName,
+                                            String fileName,
+                                            INativeTypesHandler nativeTypesHandler,
+                                            StringBuilder errorMessage) {
         Map<String,String> options = new HashMap<>();
         List<String> javaCodeLines;
         try {
             options.put("Package", qualifiedPackageName);
-            String name = getDtoNameWithoutExtension(fileName).replaceAll("\\.", "_");
+            String name = getDtoFileName(fileName, nativeTypesHandler);
             options.put("GlobalNamespace", name);
-            javaCodeLines = NativeTypeUtils.getNativeTypesHandler(fileName).getUpdatedCode(addressUrl, options);
+            javaCodeLines = nativeTypesHandler.getUpdatedCode(addressUrl, options);
 
             if (!javaCodeLines.get(0).startsWith("/* Options:")) {
                 //Invalid endpoint
@@ -155,7 +171,12 @@ public class AddServiceStackRefHandler {
         return false;
     }
 
-    private static String getDtoPath(Module module, String qualifiedPackageName, String selectedDirectory, String fileName, StringBuilder errorMessage) throws FileNotFoundException {
+    private static String getDtoPath(Module module,
+                                     String qualifiedPackageName,
+                                     String selectedDirectory,
+                                     String fileName,
+                                     INativeTypesHandler nativeTypesHandler,
+                                     StringBuilder errorMessage) throws FileNotFoundException {
         String projectBasePath = module.getProject().getBasePath();
         if(projectBasePath == null) {
             throw new FileNotFoundException("Module file not found. Unable to add DTO to project.");
@@ -178,7 +199,7 @@ public class AddServiceStackRefHandler {
             }
             fullDtoPath = rootPackageDir.getVirtualFile().getPath() +
                     File.separator +
-                    getDtoFileName(fileName);
+                    getDtoFileName(fileName, nativeTypesHandler);
         } else {
             String moduleSourcePath;
             if(projectBase.getParent() == null) {
@@ -186,7 +207,8 @@ public class AddServiceStackRefHandler {
             } else {
                 moduleSourcePath = projectBase.getParent() + "/src/main/java";
             }
-            fullDtoPath = moduleSourcePath + File.separator + getDtoFileName(fileName);
+            fullDtoPath = moduleSourcePath + File.separator +
+                    getDtoFileName(fileName, nativeTypesHandler);
         }
         return fullDtoPath;
     }

@@ -23,9 +23,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
-import static net.servicestack.idea.common.IDEAUtils.getDtoFileName;
-import static net.servicestack.idea.common.IDEAUtils.refreshFile;
-
 public class AddPythonRefHandler {
     static void handleOk(Module module,
                          String addressUrl,
@@ -37,7 +34,7 @@ public class AddPythonRefHandler {
                 new PythonNativeTypesHandler();
 
         String dtoPath = file.getAbsolutePath() + File.separator
-                + getDtoFileName(fileName, nativeTypesHandler);
+                + IDEAUtils.getDtoFileName(fileName, nativeTypesHandler);
         List<String> codeLines = getDtoLines(addressUrl, nativeTypesHandler, errorMessage);
 
         if (codeLines == null) {
@@ -51,7 +48,7 @@ public class AddPythonRefHandler {
         }
 
         Analytics.SubmitAnonymousAddReferenceUsage(nativeTypesHandler);
-        refreshFile(module, dtoPath, true);
+        IDEAUtils.refreshFile(module, dtoPath, true);
         VirtualFileManager.getInstance().syncRefresh();
     }
 

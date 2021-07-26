@@ -92,21 +92,10 @@ public class IDEAUtils {
 
     public static String getDtoFileName(String name, INativeTypesHandler nativeTypesHandler) {
         String conventionName = name.endsWith("dtos") ? "" : ".dtos";
-        if (!name.endsWith(nativeTypesHandler.getFileExtension())) {
-            /* file has no extension */
-            return name + conventionName + nativeTypesHandler.getFileExtension();
-        } else {
-            /* file has extension */
-            return name;
-        }
-    }
-
-    public static String getDtoFileName(String name) {
-        INativeTypesHandler nativeTypesHandler = NativeTypeUtils.getNativeTypesHandler(name);
         int p = name.lastIndexOf(".");
         if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
             /* file has no extension */
-            return name + nativeTypesHandler.getFileExtension();
+            return name + conventionName + nativeTypesHandler.getFileExtension();
         } else {
             /* file has extension e */
             return name;
@@ -130,18 +119,6 @@ public class IDEAUtils {
             }
         }
         return possibleFileName.getName();
-    }
-
-    public static String getDtoNameWithoutExtension(String name) {
-        INativeTypesHandler nativeTypesHandler = NativeTypeUtils.getNativeTypesHandler(name);
-        int p = name.lastIndexOf(".");
-        if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
-            /* file has no extension */
-            return name;
-        } else {
-            /* file has extension e */
-            return name.substring(0, p);
-        }
     }
 
     public static ImageIcon createImageIcon(String path, String description) {

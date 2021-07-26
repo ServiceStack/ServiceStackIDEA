@@ -231,6 +231,13 @@ public class AddRef extends JDialog {
             try {
                 onOK();
             } catch (Exception e1) {
+                //noinspection UnresolvedPluginConfigReference
+                Notification notification = new Notification(
+                        "ServiceStackIDEA",
+                        "Error adding ServiceStack reference",
+                        e1.getLocalizedMessage(),
+                        NotificationType.ERROR);
+                Notifications.Bus.notify(notification);
                 e1.printStackTrace();
                 errorMessage = errorMessage != null ? errorMessage : "An error occurred adding reference - " + e1.getMessage();
             }
@@ -267,6 +274,7 @@ public class AddRef extends JDialog {
                 selectedDirectory,
                 module,
                 sourceEvent,
+                this.defaultNativeTypesHandler,
                 errorMessage);
 
         if (errorMessage.toString().length() > 0) {

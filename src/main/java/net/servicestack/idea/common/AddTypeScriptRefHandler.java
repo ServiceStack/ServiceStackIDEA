@@ -10,9 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static net.servicestack.idea.common.IDEAUtils.getDtoFileName;
-import static net.servicestack.idea.common.IDEAUtils.refreshFile;
-
 public class AddTypeScriptRefHandler {
 
     static void handleOk(Module module,
@@ -28,7 +25,7 @@ public class AddTypeScriptRefHandler {
                         new TypeScriptConcreteNativeTypesHandler();
 
         String dtoPath = file.getAbsolutePath() + File.separator
-                + getDtoFileName(fileName,nativeTypesHandler);
+                + IDEAUtils.getDtoFileName(fileName,nativeTypesHandler);
         List<String> codeLines = getDtoLines(addressUrl,nativeTypesHandler,errorMessage);
 
         if(codeLines == null) {
@@ -40,7 +37,7 @@ public class AddTypeScriptRefHandler {
         }
 
         Analytics.SubmitAnonymousAddReferenceUsage(nativeTypesHandler);
-        refreshFile(module,dtoPath, true);
+        IDEAUtils.refreshFile(module,dtoPath, true);
         VirtualFileManager.getInstance().syncRefresh();
     }
 

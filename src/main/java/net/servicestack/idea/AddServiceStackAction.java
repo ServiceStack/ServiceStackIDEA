@@ -34,13 +34,19 @@ public class AddServiceStackAction extends AnAction {
         dialog.setResizable(true);
         dialog.setTitle("Add ServiceStack Reference");
 
+        if(GradleBuildFileHelper.isUsingKotlin(e)) {
+            dialog.setDefaultNativeTypesHandler(new KotlinNativeTypesHandler());
+        } else if(GradleBuildFileHelper.isDartProject(module)) {
+            dialog.setDefaultNativeTypesHandler(new DartNativeTypesHandler());
+        } else {
+            dialog.setDefaultNativeTypesHandler(new JavaNativeTypesHandler());
+        }
+
         //Check if a package was selected in the left hand menu, populate package name
         PsiElement element = LangDataKeys.PSI_ELEMENT.getData(e.getDataContext());
         if (element instanceof PsiPackage) {
             PsiPackage psiPackage = (PsiPackage) element;
             dialog.setSelectedPackage(psiPackage);
-            dialog.setVisible(true);
-            return;
         }
 
         //Check if a directory containing a Java file was selected, populate package name
@@ -76,6 +82,7 @@ public class AddServiceStackAction extends AnAction {
                     //do nothing, can't get package name.
                 }
             }
+
             ShowDialog(module, dialog, e);
             return;
         }
