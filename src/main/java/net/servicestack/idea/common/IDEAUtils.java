@@ -91,9 +91,10 @@ public class IDEAUtils {
     }
 
     public static String getDtoFileName(String name, INativeTypesHandler nativeTypesHandler) {
+        String conventionName = name.endsWith("dtos") ? "" : ".dtos";
         if (!name.endsWith(nativeTypesHandler.getFileExtension())) {
             /* file has no extension */
-            return name + nativeTypesHandler.getFileExtension();
+            return name + conventionName + nativeTypesHandler.getFileExtension();
         } else {
             /* file has extension */
             return name;

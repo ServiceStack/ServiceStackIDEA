@@ -11,8 +11,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.PlatformUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-
 /**
  * Created by Layoric on 28/05/2016.
  */
@@ -27,12 +25,11 @@ public class AddTypeScriptAction extends AnAction {
         dialog.setResizable(true);
         dialog.setTitle("Add TypeScript ServiceStack Reference");
         PsiElement element = LangDataKeys.PSI_ELEMENT.getData(anActionEvent.getDataContext());
-        INativeTypesHandler defaultTsNativeTypesHandler = new TypeScriptNativeTypesHandler();
         if (element instanceof PsiDirectory) {
             PsiDirectory selectedDir = (PsiDirectory)element;
             dialog.setSelectedDirectory(selectedDir.getVirtualFile().getPath());
-            String initialName = IDEAUtils.getInitialFileName(selectedDir.getVirtualFile().getPath(),defaultTsNativeTypesHandler);
-            dialog.setInitialDtoName(initialName);
+            String initialName = "dtos";
+            dialog.setFileName(initialName);
         }
         showDialog(dialog);
     }

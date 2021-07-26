@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.*;
+import java.io.File;
 import java.net.URL;
 
 public class AddTypeScriptRef extends JDialog {
@@ -184,7 +185,7 @@ public class AddTypeScriptRef extends JDialog {
         return this.nameTextField.getText();
     }
 
-    public void setInitialDtoName(String initialDtoName) {
+    public void setFileName(String initialDtoName) {
         this.nameTextField.setText(initialDtoName);
     }
 

@@ -6,7 +6,7 @@ package net.servicestack.idea.common;
 public class TypeScriptConcreteNativeTypesHandler extends BaseNativeTypesHandler {
     @Override
     public String getFileExtension() {
-        return ".dtos.ts";
+        return ".ts";
     }
 
     @Override
