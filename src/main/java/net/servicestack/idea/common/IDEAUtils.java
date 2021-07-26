@@ -121,6 +121,17 @@ public class IDEAUtils {
         return possibleFileName.getName();
     }
 
+    public static String getDtoNameWithoutExtension(String name, INativeTypesHandler nativeTypesHandler) {
+        int p = name.lastIndexOf(".");
+        if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
+            /* file has no extension */
+            return name;
+        } else {
+            /* file has extension e */
+            return name.substring(0, p);
+        }
+    }
+
     public static ImageIcon createImageIcon(String path, String description) {
         URL imgURL = IDEAUtils.class.getResource(path);
         if (imgURL != null) {

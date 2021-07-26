@@ -96,7 +96,9 @@ public class AddServiceStackRefHandler {
         List<String> javaCodeLines;
         try {
             options.put("Package", qualifiedPackageName);
-            String name = getDtoFileName(fileName, nativeTypesHandler);
+            String name = getDtoNameWithoutExtension(fileName, nativeTypesHandler)
+                    .replaceAll("\\.", "_")
+                    .replaceAll("-","_");
             options.put("GlobalNamespace", name);
             javaCodeLines = nativeTypesHandler.getUpdatedCode(addressUrl, options);
 
