@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -15,6 +16,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Layoric on 10/12/2015.
@@ -25,17 +27,18 @@ public class IDEAUtils {
         VirtualFileManager.getInstance().syncRefresh();
         if(module.getModuleFile() == null) { return; }
 
-        VirtualFile fileByUrl = VirtualFileManager.getInstance().findFileByUrl(module.getModuleFile().getParent().getUrl() + "/build.gradle");
+        refreshFile(module,module.getModuleFile().getParent().getUrl() + "/build.gradle",
+                false);
+    }
 
-        if(fileByUrl == null) { return; }
-
-        FileEditorManager.getInstance(module.getProject()).openFile(fileByUrl, false);
-        Editor currentEditor = FileEditorManager.getInstance(module.getProject()).getSelectedTextEditor();
-        if(currentEditor == null) { return; }
-        Document document = currentEditor.getDocument();
-
-        FileDocumentManager.getInstance().reloadFromDisk(document);
-        VirtualFileManager.getInstance().syncRefresh();
+    public static void refreshProject(Module module) {
+        Project project = module.getProject();
+        VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl(
+                Objects.requireNonNull(project.getBasePath())
+        );
+        if (virtualFile != null) {
+            virtualFile.refresh(true,true);
+        }
     }
 
     public static void refreshFile(Module module, String filePath, boolean openFile) {

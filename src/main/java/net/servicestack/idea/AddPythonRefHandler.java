@@ -37,36 +37,38 @@ public class AddPythonRefHandler {
                 new PythonNativeTypesHandler();
 
         String dtoPath = file.getAbsolutePath() + File.separator
-                + getDtoFileName(fileName,nativeTypesHandler);
-        List<String> codeLines = getDtoLines(addressUrl,nativeTypesHandler,errorMessage);
+                + getDtoFileName(fileName, nativeTypesHandler);
+        List<String> codeLines = getDtoLines(addressUrl, nativeTypesHandler, errorMessage);
 
-        if(codeLines == null) {
+        if (codeLines == null) {
             return;
         }
 
-        tryUpdateRequirementsTxt(module,errorMessage);
+        tryUpdateRequirementsTxt(module, errorMessage);
 
         if (!IDEAUtils.writeDtoFile(codeLines, dtoPath, errorMessage)) {
             return;
         }
 
         Analytics.SubmitAnonymousAddReferenceUsage(nativeTypesHandler);
-        refreshFile(module,dtoPath, true);
+        refreshFile(module, dtoPath, true);
         VirtualFileManager.getInstance().syncRefresh();
     }
 
-    private static void tryUpdateRequirementsTxt(Module module,StringBuilder errorMessage) {
+    private static void tryUpdateRequirementsTxt(Module module, StringBuilder errorMessage) {
         ProjectRootManager projectRootManager = ProjectRootManager.getInstance(module.getProject());
         Sdk sdk = projectRootManager.getProjectSdk();
-        if(sdk == null)
+        if (sdk == null)
             return;
         PyPackageManager pyPackageManager = PyPackageManager.getInstance(sdk);
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
-            pyPackageManager.refreshAndGetPackages(false);
-            pyPackageManager.install(Collections.singletonList(
-                    pyRequirement("servicestack", PyRequirementRelation.GTE, "0.0.5")),
-                    Collections.emptyList());
+                pyPackageManager.refreshAndGetPackages(false);
+                pyPackageManager.install(Collections.singletonList(
+                        pyRequirement("servicestack", PyRequirementRelation.GTE, "0.0.5")),
+                        Collections.emptyList());
+                pyPackageManager.refreshAndGetPackages(true);
+                IDEAUtils.refreshProject(module);
             } catch (ExecutionException e) {
                 errorMessage.append(e.getMessage());
                 e.printStackTrace();

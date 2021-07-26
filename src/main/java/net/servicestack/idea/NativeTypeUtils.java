@@ -12,7 +12,7 @@ public class NativeTypeUtils {
     public static INativeTypesHandler getNativeTypesHandler(String fileName) {
         INativeTypesHandler result = null;
         if (fileName.endsWith(".kt")) result = new KotlinNativeTypesHandler();
-        if (fileName.endsWith(".java")) result =  new JavaNativeTypesHandler();
+        if (fileName.endsWith(".java")) result = new JavaNativeTypesHandler();
         if (fileName.endsWith("dtos.dart")) result = new DartNativeTypesHandler();
         if (fileName.endsWith("dtos.ts")) result = new TypeScriptConcreteNativeTypesHandler();
         if (fileName.endsWith("dtos.d.ts")) result = new TypeScriptNativeTypesHandler();

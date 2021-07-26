@@ -1,6 +1,9 @@
 package net.servicestack.idea;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.ui.JBColor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -150,19 +153,46 @@ public class AddPythonRef extends JDialog {
     }
 
     private void onOK() {
+        buttonOK.setEnabled(false);
         StringBuilder errorMessageBuilder = new StringBuilder();
-        AddPythonRefHandler.handleOk(
-                this.module,
-                this.addressUrlTextField.getText(),
-                this.nameTextField.getText(),
-                this.selectedDirectory,
-                errorMessageBuilder
-        );
-        if (errorMessageBuilder.toString().length() > 0) {
-            errorTextPane.setText(errorMessageBuilder.toString());
-            errorTextPane.setVisible(true);
-        } else {
-            dispose();
+        try {
+            AddPythonRefHandler.handleOk(
+                    this.module,
+                    this.addressUrlTextField.getText(),
+                    this.nameTextField.getText(),
+                    this.selectedDirectory,
+                    errorMessageBuilder
+            );
+            if (errorMessageBuilder.toString().length() > 0) {
+                errorTextPane.setText(errorMessageBuilder.toString());
+                errorTextPane.setVisible(true);
+            } else {
+                // HACK to get file to open first.
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    try {
+                        Thread.sleep(3000);
+                        VirtualFileManager.getInstance().refreshWithoutFileWatcher(false);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                });
+                dispose();
+            }
+        } catch (Exception e) {
+            errorMessageBuilder.append("An unexpected error has occurred. - ");
+            errorMessageBuilder.append(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (errorMessageBuilder.toString().length() > 0) {
+                errorTextPane.setText(errorMessageBuilder.toString());
+                errorTextPane.setVisible(true);
+                buttonOK.setEnabled(true);
+            }
         }
     }
 
@@ -188,19 +218,11 @@ public class AddPythonRef extends JDialog {
         }
     }
 
-    public String getSelectedDirectory() {
-        return selectedDirectory;
-    }
-
     public void setSelectedDirectory(String selectedDirectory) {
         this.selectedDirectory = selectedDirectory;
     }
 
-    public String getInitialDtoName() {
-        return this.nameTextField.getText();
-    }
-
-    public void setInitialDtoName(String initialDtoName) {
+    public void setFileName(String initialDtoName) {
         this.nameTextField.setText(initialDtoName);
     }
 
