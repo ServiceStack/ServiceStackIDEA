@@ -1,16 +1,13 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.ui.JBColor;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.net.URL;
 
 public class AddTypeScriptRef extends JDialog {
@@ -33,7 +30,7 @@ public class AddTypeScriptRef extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-        ImageIcon imageIcon = createImageIcon("/logo-16.png", "ServiceStack");
+        ImageIcon imageIcon = IDEAUtils.createImageIcon("/servicestack-64.png", "ServiceStack");
         if (imageIcon != null) {
             this.setIconImage(imageIcon.getImage());
         }
@@ -176,17 +173,6 @@ public class AddTypeScriptRef extends JDialog {
         System.exit(0);
     }
 
-    private ImageIcon createImageIcon(String path, String description) {
-        URL imgURL = getClass().getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL, description);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
-
-
     public String getSelectedDirectory() {
         return selectedDirectory;
     }
@@ -199,7 +185,7 @@ public class AddTypeScriptRef extends JDialog {
         return this.nameTextField.getText();
     }
 
-    public void setInitialDtoName(String initialDtoName) {
+    public void setFileName(String initialDtoName) {
         this.nameTextField.setText(initialDtoName);
     }
 

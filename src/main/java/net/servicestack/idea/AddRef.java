@@ -6,21 +6,20 @@ import com.intellij.ide.util.PackageChooserDialog;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.psi.PsiPackage;
 import com.intellij.ui.JBColor;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
+import net.servicestack.idea.common.IDEAUtils;
+import net.servicestack.idea.common.INativeTypesHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -38,18 +37,20 @@ public class AddRef extends JDialog {
     private JTextField nameTextField;
     private JTextPane infoTextPane;
     private Module module;
+    private AnActionEvent sourceEvent;
 
     private String errorMessage;
     private String selectedDirectory;
 
     private INativeTypesHandler defaultNativeTypesHandler;
 
-    public AddRef(@NotNull Module module) {
+    public AddRef(@NotNull Module module, AnActionEvent sourceEvent) {
         this.module = module;
+        this.sourceEvent = sourceEvent;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-        ImageIcon imageIcon = createImageIcon("/logo-16.png", "ServiceStack");
+        ImageIcon imageIcon = IDEAUtils.createImageIcon("/servicestack-64.png", "ServiceStack");
         if (imageIcon != null) {
             this.setIconImage(imageIcon.getImage());
         }
@@ -230,6 +231,13 @@ public class AddRef extends JDialog {
             try {
                 onOK();
             } catch (Exception e1) {
+                //noinspection UnresolvedPluginConfigReference
+                Notification notification = new Notification(
+                        "ServiceStackIDEA",
+                        "Error adding ServiceStack reference",
+                        e1.getLocalizedMessage(),
+                        NotificationType.ERROR);
+                Notifications.Bus.notify(notification);
                 e1.printStackTrace();
                 errorMessage = errorMessage != null ? errorMessage : "An error occurred adding reference - " + e1.getMessage();
             }
@@ -265,6 +273,8 @@ public class AddRef extends JDialog {
                 nameTextField.getText(),
                 selectedDirectory,
                 module,
+                sourceEvent,
+                this.defaultNativeTypesHandler,
                 errorMessage);
 
         if (errorMessage.toString().length() > 0) {

@@ -1,22 +1,22 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 /**
- * Created by Layoric on 13/05/2016.
+ * Created by Layoric on 29/05/2016.
  */
-public class TypeScriptConcreteNativeTypesHandler extends BaseNativeTypesHandler {
+public class TypeScriptNativeTypesHandler extends BaseNativeTypesHandler {
     @Override
     public String getFileExtension() {
-        return ".dtos.ts";
+        return ".d.ts";
     }
 
     @Override
     public String getRelativeTypesUrl() {
-        return "types/typescript";
+        return "types/typescript.d";
     }
 
     @Override
     public NativeTypesLanguage getTypesLanguage() {
-        return NativeTypesLanguage.TypeScriptConcrete;
+        return NativeTypesLanguage.TypeScript;
     }
 
     @Override

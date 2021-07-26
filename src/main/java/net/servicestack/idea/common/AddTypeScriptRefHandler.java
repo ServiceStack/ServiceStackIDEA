@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
-
-import static net.servicestack.idea.IDEAUtils.refreshFile;
 
 public class AddTypeScriptRefHandler {
 
@@ -27,7 +25,7 @@ public class AddTypeScriptRefHandler {
                         new TypeScriptConcreteNativeTypesHandler();
 
         String dtoPath = file.getAbsolutePath() + File.separator
-                + getDtoFileName(fileName,nativeTypesHandler);
+                + IDEAUtils.getDtoFileName(fileName,nativeTypesHandler);
         List<String> codeLines = getDtoLines(addressUrl,nativeTypesHandler,errorMessage);
 
         if(codeLines == null) {
@@ -39,7 +37,7 @@ public class AddTypeScriptRefHandler {
         }
 
         Analytics.SubmitAnonymousAddReferenceUsage(nativeTypesHandler);
-        refreshFile(module,dtoPath, true);
+        IDEAUtils.refreshFile(module,dtoPath, true);
         VirtualFileManager.getInstance().syncRefresh();
     }
 
@@ -63,15 +61,5 @@ public class AddTypeScriptRefHandler {
             return null;
         }
         return codeLines;
-    }
-
-    public static String getDtoFileName(String name, INativeTypesHandler nativeTypesHandler) {
-        if (!name.endsWith(nativeTypesHandler.getFileExtension())) {
-            /* file has no extension */
-            return name + nativeTypesHandler.getFileExtension();
-        } else {
-            /* file has extension */
-            return name;
-        }
     }
 }

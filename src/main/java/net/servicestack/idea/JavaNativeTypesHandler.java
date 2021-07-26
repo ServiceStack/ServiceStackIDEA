@@ -1,5 +1,8 @@
 package net.servicestack.idea;
 
+import net.servicestack.idea.common.BaseNativeTypesHandler;
+import net.servicestack.idea.common.NativeTypesLanguage;
+
 /**
  * Created by Layoric on 4/12/2015.
  */
@@ -21,7 +24,7 @@ public class JavaNativeTypesHandler extends BaseNativeTypesHandler {
 
     @Override
     public String getOptionsCommentStart() {
-        return "*/";
+        return "/* Options:";
     }
 
     @Override

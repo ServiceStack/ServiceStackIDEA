@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;

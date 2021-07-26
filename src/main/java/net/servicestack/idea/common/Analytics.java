@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,17 +30,14 @@ public final class Analytics {
             final URL[] serviceUrl = {null};
             final URLConnection[] responseConnection = {null};
             final BufferedReader[] responseReader = {null};
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        serviceUrl[0] = new URL(url);
-                        responseConnection[0] = serviceUrl[0].openConnection();
-                        responseReader[0] = new BufferedReader(new InputStreamReader(responseConnection[0].getInputStream()));
-                        responseReader[0].close();
-                    } catch (IOException e) {
-                        // Ignore failure (eg no internet connection).
-                    }
+            Thread thread = new Thread(() -> {
+                try {
+                    serviceUrl[0] = new URL(url);
+                    responseConnection[0] = serviceUrl[0].openConnection();
+                    responseReader[0] = new BufferedReader(new InputStreamReader(responseConnection[0].getInputStream()));
+                    responseReader[0].close();
+                } catch (IOException e) {
+                    // Ignore failure (eg no internet connection).
                 }
             });
             thread.start();

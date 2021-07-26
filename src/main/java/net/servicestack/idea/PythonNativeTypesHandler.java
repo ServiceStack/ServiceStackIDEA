@@ -1,5 +1,8 @@
 package net.servicestack.idea;
 
+import net.servicestack.idea.common.BaseNativeTypesHandler;
+import net.servicestack.idea.common.NativeTypesLanguage;
+
 public class PythonNativeTypesHandler extends BaseNativeTypesHandler {
     @Override
     public String getFileExtension() {

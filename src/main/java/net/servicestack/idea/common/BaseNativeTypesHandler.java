@@ -1,5 +1,6 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
+import net.servicestack.idea.common.INativeTypesHandler;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.io.BufferedReader;

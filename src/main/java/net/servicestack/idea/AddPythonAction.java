@@ -6,12 +6,12 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.PlatformUtils;
+import net.servicestack.idea.common.INativeTypesHandler;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 
 public class AddPythonAction extends AnAction {
     @Override
@@ -28,33 +28,13 @@ public class AddPythonAction extends AnAction {
         if (element instanceof PsiDirectory) {
             PsiDirectory selectedDir = (PsiDirectory)element;
             dialog.setSelectedDirectory(selectedDir.getVirtualFile().getPath());
-            String initialName = getInitialFileName(selectedDir.getVirtualFile().getPath(),defaultTsNativeTypesHandler);
-            dialog.setInitialDtoName(initialName);
+            dialog.setFileName("dtos");
         }
         showDialog(dialog);
     }
 
     private void showDialog(AddPythonRef dialog) {
         dialog.setVisible(true);
-    }
-
-    private String getInitialFileName(String path, INativeTypesHandler defaultTsNativeTypesHandler) {
-        String initName = "dtos";
-        File existingFile = new File(path + "/" + initName +
-                defaultTsNativeTypesHandler.getFileExtension());
-        if(!existingFile.exists())
-            return initName;
-        int count = 1;
-        while(true) {
-            existingFile = new File(path + "/" + initName + count +
-                    defaultTsNativeTypesHandler.getFileExtension());
-            if(existingFile.exists()) {
-                count++;
-            } else {
-                break;
-            }
-        }
-        return initName + count;
     }
 
     @Override

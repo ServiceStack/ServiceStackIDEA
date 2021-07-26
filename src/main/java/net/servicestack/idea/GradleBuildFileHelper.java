@@ -1,11 +1,18 @@
 package net.servicestack.idea;
 
+import com.intellij.facet.Facet;
+import com.intellij.facet.FacetManager;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 /**
  * Created by Layoric on 2/04/2015.
@@ -15,14 +22,14 @@ public class GradleBuildFileHelper {
 
     private static final String kotlinGroupName = "org.jetbrains.kotlin";
 
-    public static boolean addDependency(Module module,String groupId, String packageName, String version) throws FileNotFoundException {
-        File gradleFile = getGradleBuildFile(module);
+    public static boolean addDependency(AnActionEvent event,String groupId, String packageName, String version) throws FileNotFoundException {
+        File gradleFile = getGradleBuildFile(event);
         if(gradleFile == null) {
             return false;
         }
-        Integer dependenciesStartIndex = -1;
-        Integer dependenciesEndIndex = -1;
-        List<String> list = new ArrayList<String>();
+        int dependenciesStartIndex = -1;
+        int dependenciesEndIndex = -1;
+        List<String> list = new ArrayList<>();
         BufferedReader br = new BufferedReader(new FileReader(gradleFile));
         try {
             int count = 0;
@@ -71,19 +78,29 @@ public class GradleBuildFileHelper {
         return true;
     }
 
-    public static Boolean isGradleModule(Module module) {
-        return getGradleBuildFile(module) != null;
+    public static Boolean isGradleModule(AnActionEvent event) {
+        return getGradleBuildFile(event) != null;
     }
 
     public static Boolean isDartProject(Module module) {
         return getDartPubspec(module) != null;
     }
 
-    public static Boolean isUsingKotlin(Module module){
-        if (!isGradleModule(module)) {
+    public static boolean isAndroidProject(@NotNull Module module) {
+        Facet[] facetsByType = FacetManager.getInstance(module).getAllFacets();
+        for (Facet facet : facetsByType) {
+            if (facet.getTypeId().toString().equals("android")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean isUsingKotlin(AnActionEvent event){
+        if (!isGradleModule(event)) {
             return false;
         }
-        File buildFile = getGradleBuildFile(module);
+        File buildFile = getGradleBuildFile(event);
         if (buildFile == null) {
             return false;
         }
@@ -104,26 +121,46 @@ public class GradleBuildFileHelper {
         return result;
     }
 
-    public static File getGradleBuildFile(Module module) {
-        VirtualFile moduleFile = module.getModuleFile();
-        if (moduleFile == null) {
-            return null;
+    public static File getGradleBuildFile(AnActionEvent event) {
+        VirtualFile vFile = event.getData(CommonDataKeys.VIRTUAL_FILE);
+        Project project = event.getData(CommonDataKeys.PROJECT);
+        assert project != null;
+        String projectBase = project.getBasePath();
+        assert projectBase != null;
+        File projectBaseFile = new File(projectBase);
+        projectBase = projectBaseFile.getAbsolutePath();
+        assert vFile != null;
+        String basePath = vFile.isDirectory() ? vFile.getPath() : vFile.getParent().getPath();
+        File file = new File(basePath);
+        File gradleFile = null;
+
+        int count = 0;
+        int maxDepth = 8;
+        while(true) {
+            File[] matchingFiles = file.listFiles((dir, name) -> name.startsWith("build.gradle"));
+            boolean foundFile = matchingFiles != null && matchingFiles.length != 0;
+
+            if(foundFile) {
+                gradleFile = matchingFiles[0];
+                break;
+            }
+            // project base even on Windows value is "c:/x/" using the wrong file separator.
+            if(file.getAbsolutePath().equals(projectBase) || count >= maxDepth) {
+                break;
+            }
+            count++;
+            file = file.getParentFile();
         }
-        String moduleDirectory = moduleFile.getParent().getPath();
-        File file = new File(moduleDirectory);
-        File[] matchingFiles = file.listFiles((dir, name) -> name.startsWith("build.gradle"));
-        return matchingFiles == null || matchingFiles.length == 0
-            ? null
-            : matchingFiles[0];
+        return gradleFile;
+
     }
 
     public static File getDartPubspec(Module module) {
-        VirtualFile moduleFile = module.getModuleFile();
-        if (moduleFile == null) {
+        String projDir = module.getProject().getBasePath();
+        if (projDir == null) {
             return null;
         }
-        String moduleDirectory = moduleFile.getParent().getPath();
-        File file = new File(moduleDirectory);
+        File file = new File(projDir);
         File[] matchingFiles = file.listFiles((dir, name) -> name.startsWith("pubspec.yaml"));
         return matchingFiles == null || matchingFiles.length == 0
             ? null

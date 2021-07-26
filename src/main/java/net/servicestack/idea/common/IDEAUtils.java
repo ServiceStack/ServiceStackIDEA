@@ -1,18 +1,22 @@
-package net.servicestack.idea;
+package net.servicestack.idea.common;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.util.PlatformUtils;
+import net.servicestack.idea.NativeTypeUtils;
 
+import javax.swing.*;
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Layoric on 10/12/2015.
@@ -23,17 +27,18 @@ public class IDEAUtils {
         VirtualFileManager.getInstance().syncRefresh();
         if(module.getModuleFile() == null) { return; }
 
-        VirtualFile fileByUrl = VirtualFileManager.getInstance().findFileByUrl(module.getModuleFile().getParent().getUrl() + "/build.gradle");
+        refreshFile(module,module.getModuleFile().getParent().getUrl() + "/build.gradle",
+                false);
+    }
 
-        if(fileByUrl == null) { return; }
-
-        FileEditorManager.getInstance(module.getProject()).openFile(fileByUrl, false);
-        Editor currentEditor = FileEditorManager.getInstance(module.getProject()).getSelectedTextEditor();
-        if(currentEditor == null) { return; }
-        Document document = currentEditor.getDocument();
-
-        FileDocumentManager.getInstance().reloadFromDisk(document);
-        VirtualFileManager.getInstance().syncRefresh();
+    public static void refreshProject(Module module) {
+        Project project = module.getProject();
+        VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl(
+                Objects.requireNonNull(project.getBasePath())
+        );
+        if (virtualFile != null) {
+            virtualFile.refresh(true,true);
+        }
     }
 
     public static void refreshFile(Module module, String filePath, boolean openFile) {
@@ -41,9 +46,7 @@ public class IDEAUtils {
         File file = new File(filePath);
         VirtualFile fileByUrl = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file);
 
-        if (fileByUrl == null) {
-            return;
-        }
+        if (fileByUrl == null) { return; }
 
         FileEditorManager.getInstance(module.getProject()).openFile(fileByUrl, false);
         Editor currentEditor = FileEditorManager.getInstance(module.getProject()).getSelectedTextEditor();
@@ -87,34 +90,55 @@ public class IDEAUtils {
         FileEditorManager.getInstance(module.getProject()).closeFile(fileByUrl);
     }
 
-    public static INativeTypesHandler getDefaultNativeTypesHandler(Module module) {
-        if (GradleBuildFileHelper.isGradleModule(module) && GradleBuildFileHelper.isUsingKotlin(module)) {
-            return new KotlinNativeTypesHandler();
+    public static String getDtoFileName(String name, INativeTypesHandler nativeTypesHandler) {
+        String conventionName = name.endsWith("dtos") ? "" : ".dtos";
+        int p = name.lastIndexOf(".");
+        if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
+            /* file has no extension */
+            return name + conventionName + nativeTypesHandler.getFileExtension();
+        } else {
+            /* file has extension e */
+            return name;
         }
-
-        if (IDEAPomFileHelper.isMavenProjectWithKotlin(module)) {
-            return new KotlinNativeTypesHandler();
-        }
-
-        if (GradleBuildFileHelper.isDartProject(module)) {
-            return new DartNativeTypesHandler();
-        }
-
-        if (PlatformUtils.isWebStorm()) {
-            return new TypeScriptConcreteNativeTypesHandler();
-        }
-
-        return new JavaNativeTypesHandler();
     }
 
-    public static INativeTypesHandler getNativeTypesHandler(String fileName) {
-        INativeTypesHandler result = null;
-        if (fileName.endsWith(".kt")) result = new KotlinNativeTypesHandler();
-        if (fileName.endsWith(".java")) result =  new JavaNativeTypesHandler();
-        if (fileName.endsWith("dtos.dart")) result = new DartNativeTypesHandler();
-        if (fileName.endsWith("dtos.ts")) result = new TypeScriptConcreteNativeTypesHandler();
-        if (fileName.endsWith("dtos.d.ts")) result = new TypeScriptNativeTypesHandler();
-        if (fileName.endsWith("dtos.py")) result = new PythonNativeTypesHandler();
-        return result;
+    public static String getInitialFileName(String path, INativeTypesHandler defaultTsNativeTypesHandler) {
+        String initName = "dtos";
+        File possibleFileName = new File(path + "/" + initName +
+                defaultTsNativeTypesHandler.getFileExtension());
+        if(!possibleFileName.exists())
+            return possibleFileName.getName();
+        int count = 1;
+        while(true) {
+            possibleFileName = new File(path + "/" + initName + count +
+                    defaultTsNativeTypesHandler.getFileExtension());
+            if(possibleFileName.exists()) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return possibleFileName.getName();
+    }
+
+    public static String getDtoNameWithoutExtension(String name, INativeTypesHandler nativeTypesHandler) {
+        int p = name.lastIndexOf(".");
+        if (p == -1 || !name.substring(p).equals(nativeTypesHandler.getFileExtension())) {
+            /* file has no extension */
+            return name;
+        } else {
+            /* file has extension e */
+            return name.substring(0, p);
+        }
+    }
+
+    public static ImageIcon createImageIcon(String path, String description) {
+        URL imgURL = IDEAUtils.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL, description);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
     }
 }

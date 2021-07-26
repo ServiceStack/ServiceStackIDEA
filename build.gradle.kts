@@ -78,7 +78,7 @@ tasks {
     }
 
 //    runIde {
-//        ideDir.set(File("C:\\Users\\Layoric\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PyCharm-C\\ch-0\\203.7148.72"))
+//        ideDir.set(File("C:\\Users\\Layoric\\AppData\\Local\\JetBrains\\Toolbox\\apps\\AndroidStudio\\ch-0\\202.7486908"))
 //    }
 
     patchPluginXml {

@@ -2,15 +2,16 @@ package net.servicestack.idea;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.DocumentRunnable;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.psi.PsiDocumentManager;
-import com.jetbrains.python.packaging.PyPackage;
 import com.jetbrains.python.packaging.PyPackageManager;
 import com.jetbrains.python.packaging.requirement.PyRequirementRelation;
+import net.servicestack.idea.common.Analytics;
+import net.servicestack.idea.common.DialogErrorMessages;
+import net.servicestack.idea.common.IDEAUtils;
+import net.servicestack.idea.common.INativeTypesHandler;
 
 import static com.jetbrains.python.packaging.PyRequirementsKt.pyRequirement;
 
@@ -19,11 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static net.servicestack.idea.IDEAUtils.refreshFile;
 
 public class AddPythonRefHandler {
     static void handleOk(Module module,
@@ -36,49 +34,43 @@ public class AddPythonRefHandler {
                 new PythonNativeTypesHandler();
 
         String dtoPath = file.getAbsolutePath() + File.separator
-                + getDtoFileName(fileName,nativeTypesHandler);
-        List<String> codeLines = getDtoLines(addressUrl,nativeTypesHandler,errorMessage);
+                + IDEAUtils.getDtoFileName(fileName, nativeTypesHandler);
+        List<String> codeLines = getDtoLines(addressUrl, nativeTypesHandler, errorMessage);
 
-        if(codeLines == null) {
+        if (codeLines == null) {
             return;
         }
 
-        tryUpdateRequirementsTxt(module,dtoPath,errorMessage);
+        tryUpdateRequirementsTxt(module, errorMessage);
 
         if (!IDEAUtils.writeDtoFile(codeLines, dtoPath, errorMessage)) {
             return;
         }
 
         Analytics.SubmitAnonymousAddReferenceUsage(nativeTypesHandler);
-        refreshFile(module,dtoPath, true);
+        IDEAUtils.refreshFile(module, dtoPath, true);
         VirtualFileManager.getInstance().syncRefresh();
     }
 
-    private static void tryUpdateRequirementsTxt(Module module, String dtoPath, StringBuilder errorMessage) {
+    private static void tryUpdateRequirementsTxt(Module module, StringBuilder errorMessage) {
         ProjectRootManager projectRootManager = ProjectRootManager.getInstance(module.getProject());
         Sdk sdk = projectRootManager.getProjectSdk();
-        if(sdk == null)
+        if (sdk == null)
             return;
         PyPackageManager pyPackageManager = PyPackageManager.getInstance(sdk);
-        ApplicationManager.getApplication().runWriteAction(() -> {
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
-            pyPackageManager.refreshAndGetPackages(false);
-            pyPackageManager.install(Collections.singletonList(
-                    pyRequirement("servicestack", PyRequirementRelation.GTE, "0.0.5")),
-                    Collections.emptyList());
+                pyPackageManager.refreshAndGetPackages(false);
+                pyPackageManager.install(Collections.singletonList(
+                        pyRequirement("servicestack", PyRequirementRelation.GTE, "0.0.5")),
+                        Collections.emptyList());
+                pyPackageManager.refreshAndGetPackages(true);
+                IDEAUtils.refreshProject(module);
             } catch (ExecutionException e) {
+                errorMessage.append(e.getMessage());
                 e.printStackTrace();
             }
         });
-    }
-
-    private static PyPackage findPackage(String name, List<PyPackage> packages) {
-        for (PyPackage pkg : packages) {
-            if (name.equals(pkg.getName())) {
-                return pkg;
-            }
-        }
-        return null;
     }
 
     private static List<String> getDtoLines(String addressUrl, INativeTypesHandler nativeTypesHandler,
@@ -101,15 +93,5 @@ public class AddPythonRefHandler {
             return null;
         }
         return codeLines;
-    }
-
-    public static String getDtoFileName(String name, INativeTypesHandler nativeTypesHandler) {
-        if (!name.endsWith(nativeTypesHandler.getFileExtension())) {
-            /* file has no extension */
-            return name + nativeTypesHandler.getFileExtension();
-        } else {
-            /* file has extension */
-            return name;
-        }
     }
 }

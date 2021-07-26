@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
+import net.servicestack.idea.common.INativeTypesHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -31,7 +32,7 @@ public class UpdateServiceStackReferenceIntention extends QuickEditAction implem
             if(psiFile == null) {
                 return false;
             }
-            INativeTypesHandler nativeTypesHandler = IDEAUtils.getNativeTypesHandler(psiFile.getName());
+            INativeTypesHandler nativeTypesHandler = NativeTypeUtils.getNativeTypesHandler(psiFile.getName());
             if(nativeTypesHandler == null) {
                 return false;
             }
@@ -57,6 +58,6 @@ public class UpdateServiceStackReferenceIntention extends QuickEditAction implem
 
     @Override
     public Icon getIcon(@IconFlags int i) {
-        return new ImageIcon(this.getClass().getResource("/logo-16.png"));
+        return new ImageIcon(this.getClass().getResource("/servicestack.svg"));
     }
 }
