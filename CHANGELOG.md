@@ -3,6 +3,7 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+## [1.2.4-nightly]
 - Fixes for Python Add ServiceStack Reference in PyCharm.
 - Higher res icons.
 - Fixes for Java Gradle projects.
