@@ -3,6 +3,7 @@ package net.servicestack.idea;
 import com.intellij.codeInsight.intention.impl.QuickEditAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
@@ -17,7 +18,7 @@ public class UpdateServiceStackReferenceIntention extends QuickEditAction implem
     @NotNull
     @Override
     public String getText() {
-        return "Update ServiceStack Reference";
+        return "Update ServiceStack reference";
     }
 
     @NotNull
@@ -58,6 +59,6 @@ public class UpdateServiceStackReferenceIntention extends QuickEditAction implem
 
     @Override
     public Icon getIcon(@IconFlags int i) {
-        return new ImageIcon(this.getClass().getResource("/servicestack.svg"));
+        return IconLoader.getIcon("/servicestack.svg");
     }
 }

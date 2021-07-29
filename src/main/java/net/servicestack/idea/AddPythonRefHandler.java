@@ -60,13 +60,16 @@ public class AddPythonRefHandler {
         PyPackageManager pyPackageManager = PyPackageManager.getInstance(sdk);
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
+                Thread.sleep(100);
                 pyPackageManager.refreshAndGetPackages(false);
                 pyPackageManager.install(Collections.singletonList(
                         pyRequirement("servicestack", PyRequirementRelation.GTE, "0.0.5")),
                         Collections.emptyList());
                 pyPackageManager.refreshAndGetPackages(true);
                 IDEAUtils.refreshProject(module);
-            } catch (ExecutionException e) {
+                ApplicationManager.getApplication().invokeLater(() ->
+                        VirtualFileManager.getInstance().refreshWithoutFileWatcher(false));
+            } catch (ExecutionException | InterruptedException e) {
                 errorMessage.append(e.getMessage());
                 e.printStackTrace();
             }

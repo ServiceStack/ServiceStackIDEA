@@ -167,20 +167,6 @@ public class AddPythonRef extends JDialog {
                 errorTextPane.setText(errorMessageBuilder.toString());
                 errorTextPane.setVisible(true);
             } else {
-                // HACK to get file to open first.
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    try {
-                        Thread.sleep(3000);
-                        VirtualFileManager.getInstance().refreshWithoutFileWatcher(false);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
                 dispose();
             }
         } catch (Exception e) {
