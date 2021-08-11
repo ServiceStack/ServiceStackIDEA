@@ -3,12 +3,13 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
-## [1.2.4-nightly]
 - Fixes for Python Add ServiceStack Reference in PyCharm.
 - Higher res icons.
 - Fixes for Java Gradle projects.
 - Fixes for Kotlin project pathing.
 - Fixes for Android Gradle pathing.
+- Support for 2021.2
+## [1.2.4-nightly]
 ## [1.2.3-nightly]
 ## [1.2.1-beta]
 - Add support for Python Add ServiceStack Reference in PyCharm.
