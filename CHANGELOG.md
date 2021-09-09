@@ -3,6 +3,7 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+## [1.2.5]
 - Fix for TypeScript Update Reference
 ## [1.2.4]
 - Fixes for Python Add ServiceStack Reference in PyCharm.
