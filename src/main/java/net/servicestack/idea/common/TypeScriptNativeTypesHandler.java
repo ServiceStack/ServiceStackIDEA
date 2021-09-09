@@ -21,7 +21,7 @@ public class TypeScriptNativeTypesHandler extends BaseNativeTypesHandler {
 
     @Override
     public String getOptionsCommentStart() {
-        return "*/";
+        return "/* Options:";
     }
 
     @Override
