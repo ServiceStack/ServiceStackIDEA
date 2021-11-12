@@ -3,6 +3,7 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Update target version for 2021.1.3 release
 ## [1.2.5]
 - Fix for TypeScript Update Reference
 ## [1.2.4]
