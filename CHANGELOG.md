@@ -3,6 +3,7 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Update target version for 2022.3+ release
 ## [1.2.8]
 - Update target version for 2022.2+ release
 ## [1.2.7]
