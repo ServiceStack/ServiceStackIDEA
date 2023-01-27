@@ -3,6 +3,7 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Add MJS Support to Rider
 ## [1.2.9]
 - Update target version for 2022.3+ release
 ## [1.2.8]
