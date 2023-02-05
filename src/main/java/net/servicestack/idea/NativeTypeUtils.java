@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.util.PlatformUtils;
 import net.servicestack.idea.common.INativeTypesHandler;
+import net.servicestack.idea.common.MjsNativeTypesHandler;
 import net.servicestack.idea.common.TypeScriptConcreteNativeTypesHandler;
 import net.servicestack.idea.common.TypeScriptNativeTypesHandler;
 
@@ -17,6 +18,7 @@ public class NativeTypeUtils {
         if (fileName.endsWith("dtos.ts")) result = new TypeScriptConcreteNativeTypesHandler();
         if (fileName.endsWith("dtos.d.ts")) result = new TypeScriptNativeTypesHandler();
         if (fileName.endsWith("dtos.py")) result = new PythonNativeTypesHandler();
+        if (fileName.endsWith("dtos.mjs")) result = new MjsNativeTypesHandler();
         return result;
     }
 }
