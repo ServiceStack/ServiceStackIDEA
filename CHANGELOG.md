@@ -3,6 +3,7 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+## [1.3.1]
 - Add support for 2023.1
 ## [1.3.0]
 - Add MJS Support
