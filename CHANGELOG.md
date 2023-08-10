@@ -3,6 +3,8 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Add support for 2023.2
+- Remove use of internal APIs
 ## [1.3.1]
 - Add support for 2023.1
 ## [1.3.0]

@@ -167,7 +167,7 @@ public class AddServiceStackRefHandler {
             depAdded = true;
 
         if (depAdded) {
-            IDEAUtils.refreshBuildFile(module);
+            //IDEAUtils.refreshBuildFile(module);
             return true;
         }
         return false;

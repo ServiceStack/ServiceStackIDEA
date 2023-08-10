@@ -22,13 +22,15 @@ import java.util.Objects;
  */
 public class IDEAUtils {
 
-    public static void refreshBuildFile(Module module) {
-        VirtualFileManager.getInstance().syncRefresh();
-        if(module.getModuleFile() == null) { return; }
-
-        refreshFile(module,module.getModuleFile().getParent().getUrl() + "/build.gradle",
-                false);
-    }
+    // `module.getModuleFile()` now an internal API that cannot be used.
+    // Removing to pass review.
+//    public static void refreshBuildFile(Module module) {
+//        VirtualFileManager.getInstance().syncRefresh();
+//        if(module.getModuleFile() == null) { return; }
+//
+//        refreshFile(module,module.getModuleFile().getParent().getUrl() + "/build.gradle",
+//                false);
+//    }
 
     public static void refreshProject(Module module) {
         Project project = module.getProject();
