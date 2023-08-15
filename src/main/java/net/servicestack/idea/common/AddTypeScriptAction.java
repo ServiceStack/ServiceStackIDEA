@@ -8,7 +8,6 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
-import com.intellij.util.PlatformUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -44,11 +43,10 @@ public class AddTypeScriptAction extends AnAction {
         if (module == null) {
             e.getPresentation().setEnabled(false);
         }
-
-        if (PlatformUtils.isDataGrip() || PlatformUtils.isAppCode() ||
-            PlatformUtils.isCidr() || PlatformUtils.isCLion()) {
-            e.getPresentation().setVisible(false);
-        }
+        // If the plugin is installed, make visible.
+        // since Typescript/web is common development
+        // to variable languages/platforms.
+        e.getPresentation().setVisible(true);
 
         super.update(e);
     }

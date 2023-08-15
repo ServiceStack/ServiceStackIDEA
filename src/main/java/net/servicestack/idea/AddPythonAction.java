@@ -6,10 +6,14 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
-import com.intellij.util.PlatformUtils;
+import com.jetbrains.python.PythonFileType;
+import com.jetbrains.python.facet.PythonFacet;
+import com.jetbrains.python.facet.PythonFacetSettings;
 import net.servicestack.idea.common.INativeTypesHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,11 +48,39 @@ public class AddPythonAction extends AnAction {
             e.getPresentation().setEnabled(false);
         }
 
-        if (!PlatformUtils.isPyCharm()) {
+        if (!isPythonModule(module)) { // Checking if this is a python project for example
             e.getPresentation().setVisible(false);
         }
 
         super.update(e);
+    }
+
+    public boolean isPythonModule(Module module) {
+        if (module == null) {
+            return false;
+        }
+
+        // Retrieve the module's root manager
+        ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
+
+        // Retrieve the module's content roots
+        VirtualFile[] roots = moduleRootManager.getContentRoots();
+
+        // Iterate over each root file
+        for (VirtualFile rootFile : roots) {
+            VirtualFile[] children = rootFile.getChildren();
+
+            // Iterate over each child file
+            for (VirtualFile childFile : children) {
+                // Check if a child file is a Python file
+                if (childFile.getFileType() instanceof PythonFileType) {
+                    return true;
+                }
+            }
+        }
+
+        // If no Python files are found, return false
+        return false;
     }
 
     static Module getModule(Project project) {

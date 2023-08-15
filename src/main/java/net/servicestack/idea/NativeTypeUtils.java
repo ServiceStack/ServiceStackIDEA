@@ -1,8 +1,5 @@
 package net.servicestack.idea;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.module.Module;
-import com.intellij.util.PlatformUtils;
 import net.servicestack.idea.common.INativeTypesHandler;
 import net.servicestack.idea.common.MjsNativeTypesHandler;
 import net.servicestack.idea.common.TypeScriptConcreteNativeTypesHandler;

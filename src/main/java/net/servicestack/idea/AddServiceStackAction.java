@@ -14,9 +14,10 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.LanguageLevelModuleExtensionImpl;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.*;
-import com.intellij.util.PlatformUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -165,7 +166,7 @@ public class AddServiceStackAction extends AnAction {
             return;
         }
 
-        if (!(PlatformUtils.isIntelliJ() || isAndroidProject(module) || isDartProject(module))) {
+        if (!(isJavaProject(module) || isAndroidProject(module) || isDartProject(module))) {
             e.getPresentation().setVisible(false);
             return;
         }
@@ -184,6 +185,19 @@ public class AddServiceStackAction extends AnAction {
         }
 
         super.update(e);
+    }
+
+    public boolean isJavaProject(Module module) {
+        if (module == null) {
+            return false;
+        }
+
+        LanguageLevelModuleExtensionImpl languageLevelExtension = LanguageLevelModuleExtensionImpl.getInstance(module);
+
+        // Check if language level is not null and it is at least JDK_1_3
+        return languageLevelExtension != null &&
+                languageLevelExtension.getLanguageLevel() != null &&
+                languageLevelExtension.getLanguageLevel().isAtLeast(LanguageLevel.JDK_1_3);
     }
 
     static Module getModule(Project project) {
