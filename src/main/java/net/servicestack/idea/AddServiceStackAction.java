@@ -14,7 +14,9 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.LanguageLevelModuleExtensionImpl;
+import com.intellij.openapi.roots.LanguageLevelModuleExtension;
+import com.intellij.openapi.roots.LanguageLevelProjectExtension;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.*;
@@ -59,28 +61,6 @@ public class AddServiceStackAction extends AnAction {
                 PsiPackage mainPackage = JavaPsiFacade.getInstance(module.getProject()).findPackage(firstJavaFile.getPackageName());
                 if (mainPackage != null) {
                     dialog.setSelectedPackage(mainPackage);
-                }
-            } else if (module.getModuleFile() != null) {
-                try {
-                    PsiDirectory selectedDir = (PsiDirectory) element;
-                    String packageName = "";
-                    String moduleDirectoryPath = module.getModuleFile().getParent().getPath();
-                    List<String> packageArray = new ArrayList<>();
-                    while (selectedDir != null && !(moduleDirectoryPath.equals(selectedDir.getVirtualFile().getPath()))) {
-                        packageArray.add(selectedDir.getName());
-                        selectedDir = selectedDir.getParent();
-                        PsiPackage mainPackage = testPackage(module, packageName, packageArray);
-                        if (mainPackage != null) {
-                            //"java" is a valid package name in an empty project according to openapi so we have to ignore it and no pre-populate package name....
-                            if(mainPackage.getQualifiedName().equals("java")) {
-                                break;
-                            }
-                            dialog.setSelectedPackage(mainPackage);
-                            break;
-                        }
-                    }
-                } catch (Exception ex) {
-                    //do nothing, can't get package name.
                 }
             }
 
@@ -192,12 +172,27 @@ public class AddServiceStackAction extends AnAction {
             return false;
         }
 
-        LanguageLevelModuleExtensionImpl languageLevelExtension = LanguageLevelModuleExtensionImpl.getInstance(module);
+        LanguageLevelModuleExtension languageLevelModuleExtension = ModuleRootManager.getInstance(module).getModuleExtension(LanguageLevelModuleExtension.class);
 
-        // Check if language level is not null and it is at least JDK_1_3
-        return languageLevelExtension != null &&
-                languageLevelExtension.getLanguageLevel() != null &&
-                languageLevelExtension.getLanguageLevel().isAtLeast(LanguageLevel.JDK_1_3);
+        LanguageLevel languageLevel = null;
+
+        if (languageLevelModuleExtension != null) {
+            languageLevel = languageLevelModuleExtension.getLanguageLevel();
+        }
+
+        if (languageLevel == null) { // module does not have a specific language level, let's check global project setting
+            LanguageLevelProjectExtension languageLevelProjectExtension = LanguageLevelProjectExtension.getInstance(module.getProject());
+            if (languageLevelProjectExtension != null) {
+                languageLevel = languageLevelProjectExtension.getLanguageLevel();
+            }
+        }
+
+        // Check if language is not null and at least JDK_1_1 (or your required Java level.)
+        if (languageLevel != null && languageLevel.isAtLeast(LanguageLevel.JDK_1_3)) {
+            return true;
+        }
+
+        return false;
     }
 
     static Module getModule(Project project) {

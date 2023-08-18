@@ -1,17 +1,22 @@
 package net.servicestack.idea;
 
+import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.DocumentRunnable;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.indexing.FileBasedIndex;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,6 +34,8 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Objects;
 
 public class IDEAPomFileHelper {
 
@@ -49,19 +56,15 @@ public class IDEAPomFileHelper {
 
 
     public static String findNearestModulePomFile(Module module) {
-        PsiFile[] pomLibFiles = FilenameIndex.getFilesByName(module.getProject(), "pom.xml", GlobalSearchScope.allScope(module.getProject()));
-        String pomFilePath = null;
-        for(PsiFile psiPom : pomLibFiles) {
-            PsiDirectory psiPomParent = psiPom.getParent();
-            Project project = module.getProject();
-            if(psiPomParent == null) {
-                continue;
-            }
-            if(psiPomParent.getVirtualFile().getPath().equals(project.getBasePath())) {
-                pomFilePath = psiPom.getVirtualFile().getPath();
-            }
+        Project project = module.getProject();
+        VirtualFile projectDir = VfsUtil.findRelativeFile(Objects.requireNonNull(project.getBasePath()), project.getWorkspaceFile());
+        VirtualFile pomFile = VfsUtilCore.findRelativeFile("pom.xml", projectDir);
+
+        if (pomFile != null && Objects.equals(project.getBasePath(), pomFile.getParent().getPath())) {
+            return pomFile.getPath();
         }
-        return pomFilePath;
+
+        return null;
     }
 
     private void PomAppendDependency(final Module module, final File pomFile, String groupId, String packageId, String version) throws ParserConfigurationException, IOException, SAXException, TransformerException {

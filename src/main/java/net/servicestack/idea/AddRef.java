@@ -207,7 +207,7 @@ public class AddRef extends JDialog {
                 builder.append(metadataInputLine);
 
 
-            JsonElement jElement = new JsonParser().parse(builder.toString());
+            JsonElement jElement = JsonParser.parseString(builder.toString());
             if (jElement.getAsJsonArray().size() > 0) {
                 String latestTag = jElement.getAsJsonArray().get(0).getAsJsonObject().get("name").getAsJsonPrimitive().getAsString();
                 DepConfig.setServiceStackVersion(latestTag.substring(1));

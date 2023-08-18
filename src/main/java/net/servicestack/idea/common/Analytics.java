@@ -1,5 +1,7 @@
 package net.servicestack.idea.common;
 
+import com.intellij.openapi.project.Project;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
