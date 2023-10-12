@@ -65,7 +65,10 @@ public class GradleBuildFileHelper {
         if (!dependencyRequired) {
             return false;
         }
-        list.add(dependenciesEndIndex, "    implementation '" + groupId + ":" + packageName + ":" + version + "'");
+        String buildGradleDep = "    implementation '" + groupId + ":" + packageName + ":" + version + "'";
+        String buildGrableKtsDep = "    implementation(\"" + groupId + ":" + packageName + ":" + version + "\")";
+        String gradleDep = gradleFile.getName().endsWith(".kts") ? buildGrableKtsDep : buildGradleDep;
+        list.add(dependenciesEndIndex, gradleDep);
         try {
             PrintWriter writer = new PrintWriter(gradleFile);
             for(String item : list) {
@@ -103,6 +106,9 @@ public class GradleBuildFileHelper {
         File buildFile = getGradleBuildFile(event);
         if (buildFile == null) {
             return false;
+        }
+        if(buildFile.getName().endsWith(".kts")) {
+            return true;
         }
         boolean result = false;
         try {
