@@ -3,6 +3,8 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Fix issue for Kotlin setups using `build.gradle.kts` files.
+## [1.3.3]
 - Add support for 2023.2
 - Remove use of internal APIs
 ## [1.3.1]
