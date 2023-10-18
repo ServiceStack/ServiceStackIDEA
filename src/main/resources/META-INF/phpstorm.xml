@@ -1,0 +1,10 @@
+<idea-plugin>
+    <actions>
+        <action id="AddPhpReference" class="net.servicestack.idea.php.AddPhpAction" text="ServiceStack Reference..." icon="/servicestack.svg"
+                description="Adds a PHP ServiceStack reference to the selected folder">
+            <!--suppress PluginXmlValidity -->
+            <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewAction"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt R"/>
+        </action>
+    </actions>
+</idea-plugin>

@@ -1,4 +1,4 @@
-package net.servicestack.idea;
+package net.servicestack.idea.php;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -10,22 +10,20 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
-import com.jetbrains.python.PythonFileType;
-import net.servicestack.idea.common.INativeTypesHandler;
+import com.jetbrains.php.lang.PhpFileType;
 import org.jetbrains.annotations.NotNull;
 
-public class AddPythonAction extends AnAction {
+public class AddPhpAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
         Module module = getModule(anActionEvent);
-        AddPythonRef dialog = new AddPythonRef(module);
+        AddPhpRef dialog = new AddPhpRef(module); // Create your AddPhpRef dialog similar to your existing AddPythonRef
         dialog.pack();
         dialog.setLocationRelativeTo(null);
         dialog.setSize(dialog.getPreferredSize());
         dialog.setResizable(true);
-        dialog.setTitle("Add Python ServiceStack Reference");
+        dialog.setTitle("Add PHP ServiceStack Reference");
         PsiElement element = LangDataKeys.PSI_ELEMENT.getData(anActionEvent.getDataContext());
-        INativeTypesHandler defaultTsNativeTypesHandler = new PythonNativeTypesHandler();
         if (element instanceof PsiDirectory) {
             PsiDirectory selectedDir = (PsiDirectory)element;
             dialog.setSelectedDirectory(selectedDir.getVirtualFile().getPath());
@@ -34,7 +32,7 @@ public class AddPythonAction extends AnAction {
         showDialog(dialog);
     }
 
-    private void showDialog(AddPythonRef dialog) {
+    private void showDialog(AddPhpRef dialog) {
         dialog.setVisible(true);
     }
 
@@ -45,14 +43,14 @@ public class AddPythonAction extends AnAction {
             e.getPresentation().setEnabled(false);
         }
 
-        if (!isPythonModule(module)) { // Checking if this is a python project for example
+        if (!isPhpModule(module)) { // Checking if this is a PHP project
             e.getPresentation().setVisible(false);
         }
 
         super.update(e);
     }
 
-    public boolean isPythonModule(Module module) {
+    public boolean isPhpModule(Module module) {
         if (module == null) {
             return false;
         }
@@ -69,16 +67,18 @@ public class AddPythonAction extends AnAction {
 
             // Iterate over each child file
             for (VirtualFile childFile : children) {
-                // Check if a child file is a Python file
-                if (childFile.getFileType() instanceof PythonFileType) {
+                // Check if a child file is 'composer.json' or 'index.php'
+                String fileName = childFile.getName();
+                if ("composer.json".equals(fileName) || "index.php".equals(fileName)) {
                     return true;
                 }
             }
         }
 
-        // If no Python files are found, return false
+        // If neither 'composer.json' nor 'index.php' are found, return false
         return false;
     }
+
 
     static Module getModule(Project project) {
         if (project == null)
@@ -100,3 +100,4 @@ public class AddPythonAction extends AnAction {
         }
     }
 }
+

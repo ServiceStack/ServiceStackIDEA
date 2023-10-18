@@ -126,6 +126,7 @@ tasks {
         from("src/main/resources/META-INF") {
             include("intellij.xml")
             include("pycharm.xml")
+            include("phpstorm.xml")
         }
     }
 }

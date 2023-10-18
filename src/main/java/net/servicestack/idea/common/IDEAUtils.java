@@ -14,6 +14,8 @@ import javax.swing.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,7 +65,7 @@ public class IDEAUtils {
         BufferedWriter writer = null;
         boolean result = true;
         try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8));
+            writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(Paths.get(path)), StandardCharsets.UTF_8));
             for (String item : codeLines) {
                 writer.write(item);
                 writer.newLine();
@@ -73,8 +75,8 @@ public class IDEAUtils {
             errorMessage.append("Error writing DTOs to file - ").append(ex.getMessage());
         } finally {
             try {
-                assert writer != null;
-                writer.close();
+                if(writer != null)
+                    writer.close();
             } catch (Exception ignored) {
             }
         }

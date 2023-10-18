@@ -10,6 +10,7 @@ public enum NativeTypesLanguage {
     Java,
     Kotlin,
     Mjs,
+    Php,
     Python,
     TypeScript,
     TypeScriptConcrete,

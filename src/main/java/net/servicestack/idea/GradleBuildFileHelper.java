@@ -130,36 +130,45 @@ public class GradleBuildFileHelper {
     public static File getGradleBuildFile(AnActionEvent event) {
         VirtualFile vFile = event.getData(CommonDataKeys.VIRTUAL_FILE);
         Project project = event.getData(CommonDataKeys.PROJECT);
-        assert project != null;
+
+        if (project == null || vFile == null) {
+            return null;
+        }
+
         String projectBase = project.getBasePath();
-        assert projectBase != null;
+        if (projectBase == null) {
+            return null;
+        }
+
         File projectBaseFile = new File(projectBase);
         projectBase = projectBaseFile.getAbsolutePath();
-        assert vFile != null;
         String basePath = vFile.isDirectory() ? vFile.getPath() : vFile.getParent().getPath();
         File file = new File(basePath);
         File gradleFile = null;
 
         int count = 0;
         int maxDepth = 8;
-        while(true) {
+
+        while (true) {
             File[] matchingFiles = file.listFiles((dir, name) -> name.startsWith("build.gradle"));
             boolean foundFile = matchingFiles != null && matchingFiles.length != 0;
 
-            if(foundFile) {
+            if (foundFile) {
                 gradleFile = matchingFiles[0];
                 break;
             }
+
             // project base even on Windows value is "c:/x/" using the wrong file separator.
-            if(file.getAbsolutePath().equals(projectBase) || count >= maxDepth) {
+            if (file.getAbsolutePath().equals(projectBase) || count >= maxDepth) {
                 break;
             }
+
             count++;
             file = file.getParentFile();
         }
         return gradleFile;
-
     }
+
 
     public static File getDartPubspec(Module module) {
         String projDir = module.getProject().getBasePath();

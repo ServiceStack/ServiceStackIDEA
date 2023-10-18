@@ -88,7 +88,9 @@ public class IDEAPomFileHelper {
         newDepNode.appendChild(groupNode);
         newDepNode.appendChild(artifactNode);
         newDepNode.appendChild(versionNode);
-        assert dependenciesNode != null;
+        if(dependenciesNode == null) {
+            return;
+        }
         dependenciesNode.appendChild(newDepNode);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -101,10 +103,14 @@ public class IDEAPomFileHelper {
 
         final Project project = module.getProject();
         final VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(pomFile);
-        assert virtualFile != null;
+        if(virtualFile == null) {
+            return;
+        }
         final com.intellij.openapi.editor.Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
         final FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
-        assert document != null;
+        if(document == null) {
+            return;
+        }
         fileDocumentManager.saveDocument(document); //when file is edited and editor is closed, it is needed to save the text
         PsiDocumentManager.getInstance(project).commitDocument(document);
         PsiDocumentManager.getInstance(module.getProject()).commitAllDocuments();
@@ -148,7 +154,9 @@ public class IDEAPomFileHelper {
         }
 
         Node dependencies = getMavenDependenciesNode(doc);
-        assert dependencies != null;
+        if(dependencies == null) {
+            return false;
+        }
         NodeList depElements = dependencies.getChildNodes();
         for (int i = 0; i < depElements.getLength(); i++) {
             Node dependencyElement = depElements.item(i);

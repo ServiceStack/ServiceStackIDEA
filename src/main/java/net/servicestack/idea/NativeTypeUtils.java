@@ -4,6 +4,7 @@ import net.servicestack.idea.common.INativeTypesHandler;
 import net.servicestack.idea.common.MjsNativeTypesHandler;
 import net.servicestack.idea.common.TypeScriptConcreteNativeTypesHandler;
 import net.servicestack.idea.common.TypeScriptNativeTypesHandler;
+import net.servicestack.idea.php.PhpNativeTypesHandler;
 
 public class NativeTypeUtils {
 
@@ -11,6 +12,7 @@ public class NativeTypeUtils {
         INativeTypesHandler result = null;
         if (fileName.endsWith(".kt")) result = new KotlinNativeTypesHandler();
         if (fileName.endsWith(".java")) result = new JavaNativeTypesHandler();
+        if (fileName.endsWith(".php")) result = new PhpNativeTypesHandler();
         if (fileName.endsWith("dtos.dart")) result = new DartNativeTypesHandler();
         if (fileName.endsWith("dtos.ts")) result = new TypeScriptConcreteNativeTypesHandler();
         if (fileName.endsWith("dtos.d.ts")) result = new TypeScriptNativeTypesHandler();

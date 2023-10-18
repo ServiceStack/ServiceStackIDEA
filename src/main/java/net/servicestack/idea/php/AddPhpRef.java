@@ -1,26 +1,17 @@
-package net.servicestack.idea;
+package net.servicestack.idea.php;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.ui.JBColor;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.text.StyleContext;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.URL;
-import java.util.Locale;
 
-public class AddPythonRef extends JDialog {
+public class AddPhpRef extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -32,9 +23,17 @@ public class AddPythonRef extends JDialog {
     private String selectedDirectory;
     private String errorMessage;
 
-    private Module module;
+    private final Module module;
 
-    public AddPythonRef(Module module) {
+    public void setSelectedDirectory(String selectedDirectory) {
+        this.selectedDirectory = selectedDirectory;
+    }
+
+    public void setFileName(String fileName) {
+        this.nameTextField.setText(fileName);
+    }
+
+    public AddPhpRef(Module module) {
         this.module = module;
         setContentPane(contentPane);
         setModal(true);
@@ -156,14 +155,14 @@ public class AddPythonRef extends JDialog {
         buttonOK.setEnabled(false);
         StringBuilder errorMessageBuilder = new StringBuilder();
         try {
-            AddPythonRefHandler.handleOk(
+            AddPhpRefHandler.handleOk(
                     this.module,
                     this.addressUrlTextField.getText(),
                     this.nameTextField.getText(),
                     this.selectedDirectory,
                     errorMessageBuilder
             );
-            if (errorMessageBuilder.toString().length() > 0) {
+            if (!errorMessageBuilder.toString().isEmpty()) {
                 errorTextPane.setText(errorMessageBuilder.toString());
                 errorTextPane.setVisible(true);
             } else {
@@ -174,7 +173,7 @@ public class AddPythonRef extends JDialog {
             errorMessageBuilder.append(e.getMessage());
             e.printStackTrace();
         } finally {
-            if (errorMessageBuilder.toString().length() > 0) {
+            if (!errorMessageBuilder.toString().isEmpty()) {
                 errorTextPane.setText(errorMessageBuilder.toString());
                 errorTextPane.setVisible(true);
                 buttonOK.setEnabled(true);
@@ -188,7 +187,7 @@ public class AddPythonRef extends JDialog {
     }
 
     public static void main(String[] args) {
-        AddPythonRef dialog = new AddPythonRef(null);
+        AddPhpRef dialog = new AddPhpRef(null);
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
@@ -203,14 +202,4 @@ public class AddPythonRef extends JDialog {
             return null;
         }
     }
-
-    public void setSelectedDirectory(String selectedDirectory) {
-        this.selectedDirectory = selectedDirectory;
-    }
-
-    public void setFileName(String initialDtoName) {
-        this.nameTextField.setText(initialDtoName);
-    }
-
-
 }

@@ -3,6 +3,8 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Add support for PHPStorm and Add ServiceStack Reference
+- Resolve some issues with IntelliJ context menus
 ## [1.3.4]
 - Fix issue for Kotlin setups using `build.gradle.kts` files.
 ## [1.3.3]
