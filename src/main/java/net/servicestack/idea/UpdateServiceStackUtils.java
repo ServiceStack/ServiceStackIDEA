@@ -9,6 +9,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import net.servicestack.idea.common.Analytics;
 import net.servicestack.idea.common.INativeTypesHandler;
+import net.servicestack.idea.common.NativeTypesLanguage;
 import org.apache.http.client.utils.URIBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -107,7 +108,9 @@ public class UpdateServiceStackUtils {
             StringBuilder javaCodeResponse = getJavaCodeResponse(serverUrl);
 
             String javaCode = javaCodeResponse.toString();
-            if (!javaCode.startsWith(nativeTypesHandler.getOptionsCommentStart())) {
+            // We need to check PHP differently since it is the only language that requires a namespace
+            // declared at the top of the file.
+            if (!javaCode.startsWith(nativeTypesHandler.getOptionsCommentStart()) && !isValidPhpResponse(javaCode)) {
                 //noinspection UnresolvedPluginConfigReference
                 Notification notification = new Notification("ServiceStackIDEA", "Error updating reference", "Invalid response from provided BaseUrl - " + baseUrl, NotificationType.ERROR);
                 Notifications.Bus.notify(notification);
@@ -129,6 +132,24 @@ public class UpdateServiceStackUtils {
             Notifications.Bus.notify(notification);
             e.printStackTrace();
         }
+    }
+
+
+    private static boolean isValidPhpResponse(String phpCodeResponse) {
+        // First split into lines, we only need to test against the first 5
+        String[] phpCodeLines = phpCodeResponse.split("\n", 5);
+        // check the size of the array
+        if (phpCodeLines.length < 2) {
+            return false;
+        }
+
+        // Check if the first line is the namespace
+        if (!phpCodeLines[0].startsWith("<?php namespace")) {
+            return false;
+        }
+
+        // Check if the second line is the options comment start
+        return phpCodeLines[1].startsWith("/* Options:");
     }
 
     @NotNull
