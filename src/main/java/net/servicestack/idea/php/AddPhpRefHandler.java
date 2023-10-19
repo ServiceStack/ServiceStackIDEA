@@ -1,9 +1,15 @@
 package net.servicestack.idea.php;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.jetbrains.php.composer.ComposerDataService;
+import com.jetbrains.php.composer.addDependency.ComposerPackage;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.minidev.json.parser.ParseException;
@@ -11,6 +17,7 @@ import net.servicestack.idea.common.Analytics;
 import net.servicestack.idea.common.DialogErrorMessages;
 import net.servicestack.idea.common.IDEAUtils;
 import net.servicestack.idea.common.INativeTypesHandler;
+import com.jetbrains.php.composer.actions.ComposerInstallAction;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -76,7 +83,8 @@ public class AddPhpRefHandler {
                     // This is very inconsistent and doesn't always work
                     // Editing the `composer.json` manually causes errors from `composer`.
                     // Leaving this out until I can figure out a better way to do this.
-                    // installPackage(module);
+                    installPackage(module);
+
                 } catch (IOException | ParseException e) {
                     errorMessage.append(e.getMessage());
                     e.printStackTrace();
@@ -85,35 +93,22 @@ public class AddPhpRefHandler {
         }
     }
 
-//    public static void installPackage(Module module) {
-//        // Retrieve the module's root manager
-//        ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
-//
-//        // Retrieve the module's content roots
-//        VirtualFile[] roots = moduleRootManager.getContentRoots();
-//
-//        if (roots.length == 0) {
-//            Logger.getInstance(AddPhpRefHandler.class).warn("No content roots found");
-//            return;
-//        }
-//
-//        VirtualFile root = roots[0]; // Assuming first content root is the main project root
-//        String projectBasePath = root.getPath();
-//
-//        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-//            GeneralCommandLine commandLine = new GeneralCommandLine();
-//            commandLine.withWorkDirectory(projectBasePath);
-//            commandLine.setExePath("composer");
-//            commandLine.addParameter("require");
-//            commandLine.addParameter("servicestack/client");
-//
-//            try {
-//                commandLine.createProcess();
-//            } catch (Exception e) {
-//                Logger.getInstance(AddPhpRefHandler.class).error(e);
-//            }
-//        });
-//    }
+    public static void installPackage(Module module) {
+        Project project = module.getProject();
+        ComposerDataService composerDataService = project.getService(ComposerDataService.class);
+        VirtualFile configFile = composerDataService.getConfigFile();
+        if(configFile == null) {
+            return;
+        }
+        ComposerPackageManager composerPackageManager = new ComposerPackageManager(project);
+        ComposerPackageManager.DependentPackage dependentPackage = ComposerPackageManager.DependentPackage.SERVICESTACK_CLIENT;
+        ComposerPackage composerPackage = composerPackageManager.findPackage(dependentPackage);
+        if (composerPackage == null) {
+            composerPackageManager.installPackage(dependentPackage, configFile);
+        }
+    }
+
+
 
     private static List<String> getDtoLines(String addressUrl, INativeTypesHandler nativeTypesHandler,
                                             StringBuilder errorMessage) {

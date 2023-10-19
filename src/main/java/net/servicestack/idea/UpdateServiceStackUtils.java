@@ -10,8 +10,10 @@ import com.intellij.psi.PsiFile;
 import net.servicestack.idea.common.Analytics;
 import net.servicestack.idea.common.INativeTypesHandler;
 import org.apache.http.client.utils.URIBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -102,21 +104,7 @@ public class UpdateServiceStackUtils {
                 serverUrl.append(option.getKey()).append("=").append(option.getValue().trim().replaceAll("\\u0020", ""));
                 count++;
             }
-            URL javaCodeUrl = new URL(serverUrl.toString());
-
-            URLConnection javaCodeConnection = javaCodeUrl.openConnection();
-            javaCodeConnection.setRequestProperty("content-type", "application/json; charset=utf-8");
-            BufferedReader javaCodeBufferReader = new BufferedReader(
-                    new InputStreamReader(
-                            javaCodeConnection.getInputStream()));
-            String javaCodeInput;
-            StringBuilder javaCodeResponse = new StringBuilder();
-            while ((javaCodeInput = javaCodeBufferReader.readLine()) != null) {
-                javaCodeResponse.append(javaCodeInput);
-                //All documents inside IntelliJ IDEA always use \n line separators.
-                //http://confluence.jetbrains.net/display/IDEADEV/IntelliJ+IDEA+Architectural+Overview
-                javaCodeResponse.append("\n");
-            }
+            StringBuilder javaCodeResponse = getJavaCodeResponse(serverUrl);
 
             String javaCode = javaCodeResponse.toString();
             if (!javaCode.startsWith(nativeTypesHandler.getOptionsCommentStart())) {
@@ -141,6 +129,26 @@ public class UpdateServiceStackUtils {
             Notifications.Bus.notify(notification);
             e.printStackTrace();
         }
+    }
+
+    @NotNull
+    private static StringBuilder getJavaCodeResponse(StringBuilder serverUrl) throws IOException {
+        URL javaCodeUrl = new URL(serverUrl.toString());
+
+        URLConnection javaCodeConnection = javaCodeUrl.openConnection();
+        javaCodeConnection.setRequestProperty("content-type", "application/json; charset=utf-8");
+        BufferedReader javaCodeBufferReader = new BufferedReader(
+                new InputStreamReader(
+                        javaCodeConnection.getInputStream()));
+        String javaCodeInput;
+        StringBuilder javaCodeResponse = new StringBuilder();
+        while ((javaCodeInput = javaCodeBufferReader.readLine()) != null) {
+            javaCodeResponse.append(javaCodeInput);
+            //All documents inside IntelliJ IDEA always use \n line separators.
+            //http://confluence.jetbrains.net/display/IDEADEV/IntelliJ+IDEA+Architectural+Overview
+            javaCodeResponse.append("\n");
+        }
+        return javaCodeResponse;
     }
 
     public static String combinePath(String path, String segment) {

@@ -1,6 +1,7 @@
 package net.servicestack.idea;
 
 import com.intellij.codeInsight.intention.impl.QuickEditAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
@@ -49,7 +50,15 @@ public class UpdateServiceStackReferenceIntention extends QuickEditAction implem
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, final PsiFile psiFile) throws IncorrectOperationException {
-        UpdateServiceStackUtils.updateServiceStackReference(psiFile);
+        // First check if on write thread
+        if (ApplicationManager.getApplication().isWriteAccessAllowed()) {
+            ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                @Override
+                public void run() {
+                    UpdateServiceStackUtils.updateServiceStackReference(psiFile);
+                }
+            });
+        }
     }
 
     @Override
