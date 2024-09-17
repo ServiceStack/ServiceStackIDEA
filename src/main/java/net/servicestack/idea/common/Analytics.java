@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -34,7 +35,7 @@ public final class Analytics {
             final BufferedReader[] responseReader = {null};
             Thread thread = new Thread(() -> {
                 try {
-                    serviceUrl[0] = new URL(url);
+                    serviceUrl[0] = URI.create(url).toURL();
                     responseConnection[0] = serviceUrl[0].openConnection();
                     responseReader[0] = new BufferedReader(new InputStreamReader(responseConnection[0].getInputStream()));
                     responseReader[0].close();

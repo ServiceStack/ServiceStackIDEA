@@ -3,6 +3,8 @@
 # ServiceStackIDEA Changelog
 
 ## [Unreleased]
+- Fix issues from verifier
+## [1.4.0]
 - Add support for PHPStorm and Add ServiceStack Reference
 - Resolve some issues with IntelliJ context menus
 ## [1.3.4]
