@@ -22,6 +22,7 @@ repositories {
 }
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0")
+    implementation("net.minidev:json-smart:2.4.10")
 }
 
 // Configure gradle-intellij-plugin plugin.
