@@ -36,7 +36,9 @@ public class AddPythonAction extends AnAction {
     }
 
     private void showDialog(AddPythonRef dialog) {
-        dialog.setVisible(true);
+        try (var token = com.intellij.concurrency.ThreadContext.resetThreadContext()) {
+            dialog.setVisible(true);
+        }
     }
 
     @Override

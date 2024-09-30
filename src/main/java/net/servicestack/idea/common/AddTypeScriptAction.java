@@ -35,7 +35,9 @@ public class AddTypeScriptAction extends AnAction {
     }
 
     private void showDialog(AddTypeScriptRef dialog) {
-        dialog.setVisible(true);
+        try (var token = com.intellij.concurrency.ThreadContext.resetThreadContext()) {
+            dialog.setVisible(true);
+        }
     }
 
     @Override

@@ -128,8 +128,9 @@ public class AddServiceStackAction extends AnAction {
         else if (GradleBuildFileHelper.isDartProject(module)) {
             dialog.setFileName("dtos.dart");
         }
-
-        dialog.setVisible(true);
+        try (var token = com.intellij.concurrency.ThreadContext.resetThreadContext()) {
+            dialog.setVisible(true);
+        }
     }
 
     private PsiPackage testPackage(Module module, String packageName, List<String> packageArray) {

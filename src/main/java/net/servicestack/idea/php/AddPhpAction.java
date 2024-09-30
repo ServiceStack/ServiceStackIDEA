@@ -34,7 +34,9 @@ public class AddPhpAction extends AnAction {
     }
 
     private void showDialog(AddPhpRef dialog) {
-        dialog.setVisible(true);
+        try (var token = com.intellij.concurrency.ThreadContext.resetThreadContext()) {
+            dialog.setVisible(true);
+        }
     }
 
     @Override
