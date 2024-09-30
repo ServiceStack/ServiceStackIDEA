@@ -6,6 +6,7 @@ import com.intellij.facet.FacetManager;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -110,6 +111,11 @@ public class AddServiceStackAction extends AnAction {
             }
         }
         ShowDialog(module, dialog,e);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 
     private void ShowDialog(Module module, AddRef dialog, AnActionEvent event) {

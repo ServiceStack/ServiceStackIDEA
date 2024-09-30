@@ -1,5 +1,6 @@
 package net.servicestack.idea;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -51,6 +52,11 @@ public class UpdateServiceStackReference extends AnAction {
 
         e.getPresentation().setVisible(true);
         super.update(e);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 
     static Module getModule(Project project) {

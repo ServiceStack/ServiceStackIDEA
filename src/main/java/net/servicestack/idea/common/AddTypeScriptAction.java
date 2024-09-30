@@ -1,5 +1,6 @@
 package net.servicestack.idea.common;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -35,6 +36,11 @@ public class AddTypeScriptAction extends AnAction {
 
     private void showDialog(AddTypeScriptRef dialog) {
         dialog.setVisible(true);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 
     @Override
